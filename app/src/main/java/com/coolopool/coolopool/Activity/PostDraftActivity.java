@@ -263,7 +263,6 @@ public class PostDraftActivity extends AppCompatActivity {
                             currentRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-                                    Log.d(">>>>>>>>>>>>>>>>>>>>", currentRef.getDownloadUrl().toString());
                                     addUrl(uri.toString(), dayCounter);
                                 }
                             });
@@ -274,9 +273,7 @@ public class PostDraftActivity extends AppCompatActivity {
 
             }
 
-
         }
-
     }
 
     private void addUrl(String url, int index){
@@ -288,8 +285,6 @@ public class PostDraftActivity extends AppCompatActivity {
             uploadDyasInDatabse();
         }
 
-
-        Log.d(">>>>>>>>>>>>>>>>>>>>", "Uploaded: "+downloadUrl.size());
     }
 
 
