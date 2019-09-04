@@ -2,12 +2,14 @@ package com.coolopool.coolopool.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +30,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.roger.catloadinglibrary.CatLoadingView;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -42,11 +45,19 @@ public class LoginActivity extends AppCompatActivity {
 
     Authentication authentication;
 
+    CatLoadingView loadingView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        loadingView = new CatLoadingView();
+        loadingView.setText("       Loading...");
+        loadingView.setText("Few more sec...");
+        loadingView.setCanceledOnTouchOutside(false);
+
 
         authentication = new Authentication(this, LoginActivity.this);
 
@@ -79,11 +90,13 @@ public class LoginActivity extends AppCompatActivity {
         loginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showLoadingView();
                 Log.d("Log_test","Login button is clicked");
                 // If there is a network connection, setup Login
                 if (networkInfo != null && networkInfo.isConnected()) {
                     setUpLogin();
                 } else {
+                    hideLoadingView();
                     Toast.makeText(LoginActivity.this,"No Internet Connection.",Toast.LENGTH_SHORT).show();
                 }
             }
@@ -108,25 +121,47 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void showLoadingView(){
+        loadingView.show(getSupportFragmentManager(), "");
+    }
+
+    private void hideLoadingView(){
+        loadingView.dismiss();
+    }
+
     private void setUpLogin(){
         UserName = etusername.getText().toString().trim();
         Password = etpassword.getText().toString().trim();
 
         if(UserName.isEmpty()){
+            loadingView.setText("Invalid Username");
             etusername.setError("Please enter a valid Username!");
             etusername.requestFocus();
+            dismiss();
             return;
         }
 
         if(Password.isEmpty() || Password.length() < 4){
-            etpassword.setError("Please enter a valid Password!");
+            etpassword.setError("Invalid password");
             etpassword.requestFocus();
+            dismiss();
             return;
         }
 
-        authentication.loginUser(UserName, Password);
+        authentication.loginUser(UserName, Password, loadingView);
 
 
+    }
+
+    private  void dismiss(){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                loadingView.dismiss();
+            }
+        }, 2000);
     }
 
     public static String getUsername() {

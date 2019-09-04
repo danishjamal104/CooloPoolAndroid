@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.roger.catloadinglibrary.CatLoadingView;
 
 public class Authentication {
 
@@ -52,6 +53,7 @@ public class Authentication {
                 .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
+        
         GoogleApiClient.OnConnectionFailedListener listener = new GoogleApiClient.OnConnectionFailedListener() {
             @Override
             public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -73,7 +75,7 @@ public class Authentication {
        activity.startActivityForResult(googleIntent, 100);
     }
 
-    public void signUp(final User user, final Uri uri){
+    public void signUp(final User user, final Uri uri, final CatLoadingView loadingView){
         if(activity instanceof LoginActivity){ return; }
         auth.createUserWithEmailAndPassword(user.getUsername(), user.getPassword())
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
@@ -89,14 +91,14 @@ public class Authentication {
                             UserDatabase userDatabase = new UserDatabase(context, activity);
                             storage.storeProfilePic(task.getResult().getUser().getUid());
                             userDatabase.addUserToDatabase(user);
-
+                            loadingView.dismiss();
                             context.startActivity(new Intent(activity, HomeActivity.class));
                         }
                     }
                 });
     }
 
-    public void loginUser(String userName, String password){
+    public void loginUser(String userName, String password, final CatLoadingView loadingView){
         if(activity instanceof SignUp2Activity){ return; }
         if (isUserLoggedIn()){
             context.startActivity(new Intent(context, HomeActivity.class));
@@ -104,6 +106,7 @@ public class Authentication {
             auth.signInWithEmailAndPassword(userName, password).addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
+                    loadingView.dismiss();
                     if(task.getException() != null)
                     Toast.makeText(activity, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     if(task.isSuccessful()){

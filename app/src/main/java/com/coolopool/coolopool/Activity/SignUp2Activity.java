@@ -8,6 +8,7 @@ import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.roger.catloadinglibrary.CatLoadingView;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -64,12 +66,18 @@ public class SignUp2Activity extends AppCompatActivity implements View.OnClickLi
     String googleImageUrl;
     boolean isGoogleSignIn = false;
 
+    CatLoadingView loadingView;
+
     Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up2);
+
+        loadingView = new CatLoadingView();
+        loadingView.setText("Few more sec...");
+        loadingView.setCanceledOnTouchOutside(false);
 
         authentication = new Authentication(this, SignUp2Activity.this);
 
@@ -102,13 +110,30 @@ public class SignUp2Activity extends AppCompatActivity implements View.OnClickLi
                 startActivityForResult(galleryintent, RESULT_LOAD_IMAGE);
                 break;
             case R.id.createAccountButton:
+                showLoadingView();
                 if (networkInfo != null && networkInfo.isConnected()) {
                     createAccount();
                 } else {
+                    loadingView.dismiss();
                     Toast.makeText(SignUp2Activity.this,"No Internet Connection.",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
+    }
+
+    private void showLoadingView(){
+        loadingView.show(getSupportFragmentManager(), "");
+    }
+
+    private  void dismiss(){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                loadingView.dismiss();
+            }
+        }, 2000);
     }
 
     private void createAccount() {
@@ -118,20 +143,26 @@ public class SignUp2Activity extends AppCompatActivity implements View.OnClickLi
         email = etemail.getText().toString().trim();
 
         if(name.isEmpty()){
+            loadingView.setText("Invalid name");
             etname.setError("Please enter a valid Name.");
             etname.requestFocus();
+            dismiss();
             return;
         }
 
         if(phoneNo.isEmpty() || phoneNo.length() < 10){
+            loadingView.setText("Invalid phone no.");
             etphoneNo.setError("Please enter a valid phone number.");
             etphoneNo.requestFocus();
+            dismiss();
             return;
         }
 
         if(email.isEmpty()){
+            loadingView.setText("Invalid email");
             etemail.setError("Please enter a valid email.");
             etemail.requestFocus();
+            dismiss();
             return;
         }
 
@@ -146,7 +177,7 @@ public class SignUp2Activity extends AppCompatActivity implements View.OnClickLi
         }
 
 
-        authentication.signUp(user, uri);
+        authentication.signUp(user, uri, loadingView);
 
     }
 
