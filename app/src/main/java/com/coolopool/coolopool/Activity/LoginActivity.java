@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        authentication.loginUser(UserName, Password, loadingView);
+        authentication.loginUser(UserName+"@coolopool.com", Password, loadingView);
 
 
     }

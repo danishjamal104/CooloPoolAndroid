@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,8 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
     int focussedPosition = 0;
     View previouslySelectedView;
     int flag = 0; //0: for creating & 1: for displaying
+
+    View rootView;
 
 
     public NewDayAdapter(ArrayList<NewDay> newDays, Context context) {
@@ -48,6 +51,8 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
 
     @Override
     public void onBindViewHolder(@NonNull NewDayAdapter.NewDayViewHolder newDayViewHolder, int i) {
+
+        rootView = newDayViewHolder.view;
 
         if(newDays.size() == 1){
             previouslySelectedView = newDayViewHolder.view;
@@ -93,6 +98,10 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
 
     public ArrayList<NewDay> getNewDays() {
         return newDays;
+    }
+
+    public String getDescription(){
+        return ((EditText)rootView.findViewById(R.id.create_new_day_list_item_desc_editText)).getText().toString().trim();
     }
 
     public void addPhoto(List<Uri> uri){

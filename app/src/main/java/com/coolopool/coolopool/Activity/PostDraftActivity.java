@@ -9,17 +9,16 @@ import androidx.annotation.NonNull;
 
 import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Backend.Model.Day;
-import com.coolopool.coolopool.Class.Post;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -32,35 +31,20 @@ import android.widget.Toast;
 
 import com.coolopool.coolopool.Adapter.NewDayAdapter;
 import com.coolopool.coolopool.Class.NewDay;
-import com.coolopool.coolopool.Class.NewTrip;
-import com.coolopool.coolopool.Interface.TripClient;
 import com.coolopool.coolopool.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.gson.Gson;
+import com.roger.catloadinglibrary.CatLoadingView;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PostDraftActivity extends AppCompatActivity {
 
@@ -69,13 +53,15 @@ public class PostDraftActivity extends AppCompatActivity {
     private static int count = 1;
     private String tripTitle, tripDescription, tripDate;
 
+    CatLoadingView loadingView;
+
     DrawerLayout drawer;
 
     ArrayList<NewDay> days;
     NewDayAdapter adapter;
     RecyclerView recyclerView;
 
-    int noOfTrips;
+    int noOfBlogs;
     FirebaseAuth mAuth;
     ArrayList<ArrayList<String>> downloadUrl = new ArrayList<>();
 
@@ -94,6 +80,7 @@ public class PostDraftActivity extends AppCompatActivity {
 
 
     private void init() {
+        loadingView = new CatLoadingView();
         mAuth = FirebaseAuth.getInstance();
         drawer = findViewById(R.id.drawer_layout);
         days = new ArrayList<>();
@@ -103,6 +90,9 @@ public class PostDraftActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(false);
 
         recyclerView.setAdapter(adapter);
+
+        loadingView.setText("Uploading...");
+        loadingView.setCanceledOnTouchOutside(false);
     }
 
     public void pickImage() {
@@ -113,6 +103,10 @@ public class PostDraftActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
 
+    }
+
+    private void showLoadingView(){
+        loadingView.show(getSupportFragmentManager(), "");
     }
 
     @Override
@@ -199,30 +193,46 @@ public class PostDraftActivity extends AppCompatActivity {
 
     private void uploadBlog() {
         //uploading picture
+        loadingView.show(getSupportFragmentManager(), "TAG");
         if(uploadPictureOfBlog()){
             uploadBlogData();
+            updateNoOfBlogs();
+            loadingView.dismiss();
         }
+    }
 
-
+    private void updateNoOfBlogs(){
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference docRef = db.collection("users").document(mAuth.getUid());
+                DocumentSnapshot data = transaction.get(docRef);
+                Integer updateNoOfTripOrBlogs = data.getLong("noOfTrips").intValue() + 1;
+                transaction.update(docRef, "noOfTrips", updateNoOfTripOrBlogs);
+                return null;
+            }
+        });
     }
 
     private void uploadBlogData(){
         //creating model
-        int days = downloadUrl.size();
         Blog blog = new Blog(tripTitle, tripDescription, 0, 0, 0);
 
         FirebaseFirestore mRef = FirebaseFirestore.getInstance();
-        mRef.collection("blogs").document(mAuth.getUid()).set(blog);
+        mRef.collection("blogs").document(mAuth.getUid())
+                .collection("blogs").document(""+getNoOfTrips()).set(blog);
 
     }
 
-    private void uploadDyasInDatabse(){
+    private void uploadDaysInDatabase(){
         FirebaseFirestore mRef = FirebaseFirestore.getInstance();
         ArrayList<NewDay> newDays = adapter.getNewDays();
         for(int i=0; i<downloadUrl.size(); i++){
-            Toast.makeText(PostDraftActivity.this, ""+downloadUrl.size(), Toast.LENGTH_SHORT).show();
             Day d = new Day(""+i, "TITLE", newDays.get(i).getmDescription(), downloadUrl.get(i));
             mRef.collection("blogs").document(mAuth.getUid())
+                    .collection("blogs").document(""+noOfBlogs)
                     .collection("days").document("day"+i).set(d);
 
         }
@@ -282,22 +292,26 @@ public class PostDraftActivity extends AppCompatActivity {
             downloadUrl.get(index).add(url);
         }else{
             downloadUrl.get(index).add(url);
-            uploadDyasInDatabse();
+            uploadDaysInDatabase();
         }
 
     }
 
 
     private int getNoOfTrips(){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(mAuth.getUid().toString()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                noOfTrips = documentSnapshot.getLong("noOfTrips").intValue();
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference docRef = db.collection("users").document(mAuth.getUid());
+                DocumentSnapshot data = transaction.get(docRef);
+                noOfBlogs = data.getLong("noOfTrips").intValue();
+                return null;
             }
         });
 
-        return noOfTrips;
+        return noOfBlogs;
     }
 
     private void setUpToolbar() {
