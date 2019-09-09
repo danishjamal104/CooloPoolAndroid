@@ -2,13 +2,16 @@ package com.coolopool.coolopool.Activity;
 
 import android.content.ClipData;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Backend.Model.Day;
+import com.coolopool.coolopool.Interface.DataUploadingCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -63,12 +66,14 @@ public class PostDraftActivity extends AppCompatActivity {
 
     int noOfBlogs;
     FirebaseAuth mAuth;
-    ArrayList<ArrayList<String>> downloadUrl = new ArrayList<>();
+
+    ArrayList<ArrayList<String>> downloadUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_draft);
+        fetchNoOfBlogs();
         init();
         loadIntentData();
         setUpBackButton();
@@ -88,11 +93,13 @@ public class PostDraftActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.post_draft_activity_content_holder_linearLayout);
         recyclerView.setLayoutManager(new LinearLayoutManager(PostDraftActivity.this));
         recyclerView.setHasFixedSize(false);
-
         recyclerView.setAdapter(adapter);
+    }
 
-        loadingView.setText("Uploading...");
-        loadingView.setCanceledOnTouchOutside(false);
+    private void fetchNoOfBlogs(){
+        SharedPreferences preferences = getSharedPreferences("user", 0);
+        noOfBlogs =  preferences.getInt("noOfBlogs", -1);
+        Toast.makeText(PostDraftActivity.this, "Pref value: "+noOfBlogs, Toast.LENGTH_SHORT).show();
     }
 
     public void pickImage() {
@@ -103,10 +110,6 @@ public class PostDraftActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
 
-    }
-
-    private void showLoadingView(){
-        loadingView.show(getSupportFragmentManager(), "");
     }
 
     @Override
@@ -191,15 +194,6 @@ public class PostDraftActivity extends AppCompatActivity {
         });
     }
 
-    private void uploadBlog() {
-        //uploading picture
-        loadingView.show(getSupportFragmentManager(), "TAG");
-        if(uploadPictureOfBlog()){
-            uploadBlogData();
-            updateNoOfBlogs();
-            loadingView.dismiss();
-        }
-    }
 
     private void updateNoOfBlogs(){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -216,17 +210,7 @@ public class PostDraftActivity extends AppCompatActivity {
         });
     }
 
-    private void uploadBlogData(){
-        //creating model
-        Blog blog = new Blog(tripTitle, tripDescription, 0, 0, 0);
-
-        FirebaseFirestore mRef = FirebaseFirestore.getInstance();
-        mRef.collection("blogs").document(mAuth.getUid())
-                .collection("blogs").document(""+getNoOfTrips()).set(blog);
-
-    }
-
-    private void uploadDaysInDatabase(){
+    /*private void uploadDaysInDatabase(){
         FirebaseFirestore mRef = FirebaseFirestore.getInstance();
         ArrayList<NewDay> newDays = adapter.getNewDays();
         for(int i=0; i<downloadUrl.size(); i++){
@@ -236,83 +220,8 @@ public class PostDraftActivity extends AppCompatActivity {
                     .collection("days").document("day"+i).set(d);
 
         }
-    }
+    }*/
 
-    private boolean uploadPictureOfBlog(){
-        ArrayList<NewDay> newDays = adapter.getNewDays();
-        for(int i=0; i<newDays.size(); i++){
-            if(newDays.get(i).getmImageUri().size() > 0){
-                storePicsOfSingleDay(getUriOfSingleDay(newDays.get(i)), i);
-            }
-        }
-        return true;
-    }
-
-    private ArrayList<Uri> getUriOfSingleDay(NewDay newDay){
-        ArrayList<Uri> uris = new ArrayList<>();
-        for(int i=0; i<newDay.getmImageUri().size(); i++){
-            uris.add(newDay.getmImageUri().get(i));
-        }
-        return uris;
-    }
-
-    private void storePicsOfSingleDay(ArrayList<Uri> uris, final int dayCounter){
-        //Todo: create a day array and upload pics of all day in a nested loop
-        int noOfBlogs = getNoOfTrips();
-        StorageReference mRef = FirebaseStorage.getInstance().getReference()
-                .child("blogs/"+mAuth.getUid().toString())
-                .child("blog"+noOfBlogs).child("day"+dayCounter);
-        for(int k=0; k<uris.size(); k++){
-            if(uris.get(k) != null){
-                final StorageReference currentRef = mRef.child("pic"+k);
-                Task t = currentRef.putFile(uris.get(k));
-                t.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if(task.isSuccessful()){
-                            currentRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    addUrl(uri.toString(), dayCounter);
-                                }
-                            });
-
-                        }
-                    }
-                });
-
-            }
-
-        }
-    }
-
-    private void addUrl(String url, int index){
-        if(downloadUrl.size() == index){
-            downloadUrl.add(index, new ArrayList<String>());
-            downloadUrl.get(index).add(url);
-        }else{
-            downloadUrl.get(index).add(url);
-            uploadDaysInDatabase();
-        }
-
-    }
-
-
-    private int getNoOfTrips(){
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.runTransaction(new Transaction.Function<Void>() {
-            @Nullable
-            @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                DocumentReference docRef = db.collection("users").document(mAuth.getUid());
-                DocumentSnapshot data = transaction.get(docRef);
-                noOfBlogs = data.getLong("noOfTrips").intValue();
-                return null;
-            }
-        });
-
-        return noOfBlogs;
-    }
 
     private void setUpToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -346,4 +255,238 @@ public class PostDraftActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+    private void uploadBlog() {
+        //uploading picture
+        loadingView.show(getSupportFragmentManager(), "");
+        loadingView.setCanceledOnTouchOutside(false);
+        loadingView.setText("Uploading pics...");
+        DaysPicUploadingTask daysPicUploadingTask = new DaysPicUploadingTask(new DataUploadingCallback<String>() {
+            @Override
+            public void onSuccess() {
+                loadingView.setText("Uploading blog...");
+                BlogUploadingTask blogUploadingTask = new BlogUploadingTask(new DataUploadingCallback() {
+                    @Override
+                    public void onSuccess() {
+                        loadingView.setText("Updating trip...");
+                        TripUpdatingTask tripUpdatingTask = new TripUpdatingTask(new DataUploadingCallback<String>() {
+                            @Override
+                            public void onSuccess() {
+                                loadingView.dismiss();
+                                SharedPreferences preferences = getSharedPreferences("user", 0);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putInt("noOfBlogs", noOfBlogs+1);
+                                editor.commit();
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+
+                            }
+                        });
+                        tripUpdatingTask.execute();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+
+                    }
+                });
+                blogUploadingTask.execute(new Blog(tripTitle, tripDescription, tripDate, 0, 0, 0));
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+
+        daysPicUploadingTask.execute(adapter.getNewDays());
+
+    }
+
+
+
+
+    public class DaysPicUploadingTask extends AsyncTask<ArrayList<NewDay>, Void, ArrayList<ArrayList<String>>> {
+
+        FirebaseAuth mAuth;
+
+        DataUploadingCallback<String> mCallback;
+        Exception mException;
+
+        ArrayList<ArrayList<String>> resultUrl;
+
+        public DaysPicUploadingTask(DataUploadingCallback<String> mCallback) {
+            this.mCallback = mCallback;
+        }
+
+        @Override
+        protected ArrayList<ArrayList<String>> doInBackground(ArrayList<NewDay>... arrayLists) {
+            ArrayList<NewDay> newDays = arrayLists[0];
+            for(int i=0; i<newDays.size(); i++){
+                if(newDays.get(i).getmImageUri().size() > 0){
+                    storePicsOfSingleDay(getUriOfSingleDay(newDays.get(i)), i);
+                }
+            }
+            return resultUrl;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingView.setText("Uploading...");
+            loadingView.setCanceledOnTouchOutside(false);
+            mAuth = FirebaseAuth.getInstance();
+            resultUrl = new ArrayList<>();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<ArrayList<String>> arrayLists) {
+            super.onPostExecute(arrayLists);
+
+            downloadUrl = resultUrl;
+            if (mCallback != null) {
+                if (mException == null) {
+                    mCallback.onSuccess();
+                } else {
+                    mCallback.onFailure(mException);
+                }
+            }
+        }
+
+        private void addUrl(String url, int index){
+            if(resultUrl.size() == index){
+                resultUrl.add(index, new ArrayList<String>());
+                resultUrl.get(index).add(url);
+            }else{
+                resultUrl.get(index).add(url);
+            }
+
+        }
+
+        private ArrayList<Uri> getUriOfSingleDay(NewDay newDay){
+            ArrayList<Uri> uris = new ArrayList<>();
+            for(int i=0; i<newDay.getmImageUri().size(); i++){
+                uris.add(newDay.getmImageUri().get(i));
+            }
+            return uris;
+        }
+
+        private void storePicsOfSingleDay(ArrayList<Uri> uris, final int dayCounter){
+            //Todo: create a day array and upload pics of all day in a nested loop
+            StorageReference mRef = FirebaseStorage.getInstance().getReference()
+                    .child("blogs/"+mAuth.getUid())
+                    .child("blog"+noOfBlogs).child("day"+dayCounter);
+            for(int k=0; k<uris.size(); k++){
+                if(uris.get(k) != null){
+                    final StorageReference currentRef = mRef.child("pic"+k);
+                    Task t = currentRef.putFile(uris.get(k));
+                    t.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            if(task.isSuccessful()){
+                                currentRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        addUrl(uri.toString(), dayCounter);
+                                    }
+                                });
+
+                            }
+                        }
+                    });
+
+                }
+
+            }
+        }
+
+    }
+
+    public class BlogUploadingTask extends AsyncTask<Blog, Void, Void>{
+
+        FirebaseFirestore mRef;
+
+        DataUploadingCallback<String> mCallback;
+        Exception mException;
+
+        public BlogUploadingTask(DataUploadingCallback callback) {
+            mCallback = callback;
+        }
+
+        @Override
+        protected Void doInBackground(Blog... blogs) {
+            mRef.collection("blogs").document(mAuth.getUid())
+                    .collection("blogs").document(""+noOfBlogs).set(blogs[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingView.setText("Up Blog...");
+            mRef = FirebaseFirestore.getInstance();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (mCallback != null) {
+                if (mException == null) {
+                    mCallback.onSuccess();
+                } else {
+                    mCallback.onFailure(mException);
+                }
+            }
+        }
+
+    }
+    
+
+    public class TripUpdatingTask extends AsyncTask<Void, Void, Void>{
+
+        FirebaseFirestore db;
+
+        DataUploadingCallback<String> mCallback;
+        Exception mException;
+
+        public TripUpdatingTask(DataUploadingCallback<String> mCallback) {
+            this.mCallback = mCallback;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            db = FirebaseFirestore.getInstance();
+            db.runTransaction(new Transaction.Function<Void>() {
+                @Nullable
+                @Override
+                public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                    DocumentReference docRef = db.collection("users").document(mAuth.getUid());
+                    DocumentSnapshot data = transaction.get(docRef);
+                    Integer updateNoOfTripOrBlogs = data.getLong("noOfTrips").intValue() + 1;
+                    transaction.update(docRef, "noOfTrips", updateNoOfTripOrBlogs);
+                    return null;
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            db = FirebaseFirestore.getInstance();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if(mCallback != null && mException == null){
+                mCallback.onSuccess();
+            }
+            mCallback.onFailure(mException);
+
+        }
+    }
+
 }

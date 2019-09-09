@@ -1,32 +1,34 @@
 package com.coolopool.coolopool.Activity;
 
-import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import com.coolopool.coolopool.Views.CustomViewPager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.coolopool.coolopool.Adapter.MainStatePageAdapter;
 import com.coolopool.coolopool.Helper.DialogBuilder;
 import com.coolopool.coolopool.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -230,6 +232,25 @@ public class HomeActivity extends AppCompatActivity {
 
     private void firebaseInit(){
         mAuth = FirebaseAuth.getInstance();
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.runTransaction(new Transaction.Function<Void>() {
+
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference docRef = db.collection("user").document(mAuth.getUid());
+                DocumentSnapshot data = transaction.get(docRef);
+                int noOfBlogs = data.getLong("noOfTrips").intValue();
+
+                SharedPreferences preferences = getSharedPreferences("user", 0);
+                Editor editor = preferences.edit();
+                editor.putInt("noOfBlogs", noOfBlogs);
+                editor.commit();
+                Toast.makeText(HomeActivity.this, "noOflBlogs added", Toast.LENGTH_SHORT).show();
+
+                return null;
+            }
+        });
         Toast.makeText(this, "main: "+mAuth.getUid(), Toast.LENGTH_SHORT).show();
     }
 

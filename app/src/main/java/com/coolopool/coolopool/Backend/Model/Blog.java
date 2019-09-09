@@ -7,13 +7,15 @@ public class Blog {
 
     String title;
     String description;
+    String date;
     int Views;
     int likes;
     int experienced;
 
-    public Blog(String title, String description, int views, int likes, int experienced) {
+    public Blog(String title, String description, String date, int views, int likes, int experienced) {
         this.title = title;
         this.description = description;
+        this.date = date;
         Views = views;
         this.likes = likes;
         this.experienced = experienced;
@@ -33,6 +35,14 @@ public class Blog {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public int getViews() {
