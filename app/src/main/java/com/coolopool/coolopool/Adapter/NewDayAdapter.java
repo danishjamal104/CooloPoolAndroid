@@ -5,6 +5,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +30,7 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
     View previouslySelectedView;
     int flag = 0; //0: for creating & 1: for displaying
 
-    View rootView;
+    ArrayList<EditText> desc = new ArrayList<>();
 
 
     public NewDayAdapter(ArrayList<NewDay> newDays, Context context) {
@@ -52,7 +54,7 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
     @Override
     public void onBindViewHolder(@NonNull NewDayAdapter.NewDayViewHolder newDayViewHolder, int i) {
 
-        rootView = newDayViewHolder.view;
+        desc.add(newDayViewHolder.description);
 
         if(newDays.size() == 1){
             previouslySelectedView = newDayViewHolder.view;
@@ -100,8 +102,9 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
         return newDays;
     }
 
-    public String getDescription(){
-        return ((EditText)rootView.findViewById(R.id.create_new_day_list_item_desc_editText)).getText().toString().trim();
+    public String getDescription(int i){
+        Log.d(">>>>>>>>>>>>>>>>  ", "getDescription: " + desc.size());
+        return (desc.get(i)).getText().toString().trim();
     }
 
     public void addPhoto(List<Uri> uri){
@@ -114,15 +117,15 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
         ItemClickListener itemClickListener;
 
         TextView daysCounter;
-        TextView description;
+        EditText description;
         RecyclerView imageRecyclerView;
         View view;
 
         public NewDayViewHolder(@NonNull View itemView) {
             super(itemView);
-            daysCounter = (TextView)itemView.findViewById(R.id.create_new_day_list_item_day_counter_textView);
-            description = (TextView)itemView.findViewById(R.id.create_new_day_list_item_desc_editText);
-            imageRecyclerView = (RecyclerView)itemView.findViewById(R.id.create_new_day_list_image_recyclerView);
+            daysCounter = itemView.findViewById(R.id.create_new_day_list_item_day_counter_textView);
+            description = itemView.findViewById(R.id.create_new_day_list_item_desc_editText);
+            imageRecyclerView = itemView.findViewById(R.id.create_new_day_list_image_recyclerView);
             view = itemView;
 
             itemView.setOnClickListener(this);

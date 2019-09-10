@@ -29,6 +29,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +67,7 @@ public class PostDraftActivity extends AppCompatActivity {
     ArrayList<NewDay> days;
     NewDayAdapter adapter;
     RecyclerView recyclerView;
+    LinearLayoutManager linearLayoutManager;
 
     int noOfBlogs;
     FirebaseAuth mAuth;
@@ -91,7 +94,8 @@ public class PostDraftActivity extends AppCompatActivity {
         days = new ArrayList<>();
         adapter = new NewDayAdapter(days, this);
         recyclerView = (RecyclerView) findViewById(R.id.post_draft_activity_content_holder_linearLayout);
-        recyclerView.setLayoutManager(new LinearLayoutManager(PostDraftActivity.this));
+        linearLayoutManager = new LinearLayoutManager(PostDraftActivity.this);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(false);
         recyclerView.setAdapter(adapter);
     }
@@ -298,7 +302,6 @@ public class PostDraftActivity extends AppCompatActivity {
 
             }
         });
-
         daysPicUploadingTask.execute(adapter.getNewDays());
 
     }
@@ -320,23 +323,32 @@ public class PostDraftActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(ArrayList<NewDay>... arrayLists) {
             ArrayList<NewDay> newDays = arrayLists[0];
+            ArrayList<String> descriptio = getDescriptionOfEachDay();
             Log.d(">>>>>>>>>>>>>>>>> ", "doInBackground: size: " + newDays.get(0).getmImageUri().size());
-            for(int i=0; i<newDays.size()+1; i++){
-                try{
-                    if(newDays.get(i).getmImageUri().size() > 0){
-                        FirebaseFirestore mRef = FirebaseFirestore.getInstance();
-                        Day d = new Day(""+i, "TITLE", "Description", new ArrayList<String>());
-                        mRef.collection("blogs").document(mAuth.getUid())
-                                .collection("blogs").document(""+noOfBlogs)
-                                .collection("days").document("day"+i).set(d);
-                        storePicsOfSingleDay(getUriOfSingleDay(newDays.get(i)), i);
-                    }
-                }catch (Exception e){
-                    Log.d(">>>>>>>>>>>>>>>>.", "doInBackground: " + e.getMessage());
+            for(int i=0; i<newDays.size(); i++){
+                if(newDays.get(i).getmImageUri().size() > 0){
+                    FirebaseFirestore mRef = FirebaseFirestore.getInstance();
+                    Day d = new Day(""+i, "TITLE", descriptio.get(i), new ArrayList<String>());
+                    mRef.collection("blogs").document(mAuth.getUid())
+                            .collection("blogs").document(""+noOfBlogs)
+                            .collection("days").document("day"+i).set(d);
+                    storePicsOfSingleDay(getUriOfSingleDay(newDays.get(i)), i);
                 }
 
             }
             return null;
+        }
+
+        private ArrayList<String> getDescriptionOfEachDay(){
+            ArrayList<String> result = new ArrayList<>();
+            final int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+            final int lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
+            for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; ++i) {
+                RecyclerView.ViewHolder holder = (RecyclerView.ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+                String description = ((EditText)holder.itemView.findViewById(R.id.create_new_day_list_item_desc_editText)).getText().toString().trim();
+                result.add(description);
+            }
+            return result;
         }
 
         @Override
@@ -443,47 +455,6 @@ public class PostDraftActivity extends AppCompatActivity {
             }
         }
 
-    }
-
-    public class DaysInBlogUploadingTask extends AsyncTask< ArrayList<ArrayList<String>>, Void, Void>{
-
-        FirebaseFirestore mRef;
-
-        DataUploadingCallback<String> mCallback;
-        Exception mException;
-
-        public DaysInBlogUploadingTask(DataUploadingCallback<String> mCallback) {
-            this.mCallback = mCallback;
-        }
-
-        @Override
-        protected Void doInBackground(ArrayList<ArrayList<String>>... arrayLists) {
-            ArrayList<NewDay> newDays = adapter.getNewDays();
-            for(int i=0; i<arrayLists[0].size(); i++){
-                Log.d(">>>>>>>>>>>>>>>>>>     ", "sIZE: "+arrayLists[0].get(i).size());
-                Day d = new Day(""+i, "TITLE", newDays.get(i).getmDescription(), arrayLists[0].get(i));
-                mRef.collection("blogs").document(mAuth.getUid())
-                        .collection("blogs").document(""+noOfBlogs)
-                        .collection("days").document("day"+i).set(d);
-
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mRef = FirebaseFirestore.getInstance();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if(mCallback != null && mException == null){
-                mCallback.onSuccess();
-            }
-            mCallback.onFailure(mException);
-        }
     }
 
     public class TripUpdatingTask extends AsyncTask<Void, Void, Void>{
