@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import com.coolopool.coolopool.Views.CustomViewPager;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +30,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
+import com.roger.catloadinglibrary.CatLoadingView;
+
+import org.jetbrains.annotations.NotNull;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -62,7 +66,6 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         firebaseInit();
 
         fab = findViewById(R.id.fab);
@@ -232,25 +235,25 @@ public class HomeActivity extends AppCompatActivity {
 
     private void firebaseInit(){
         mAuth = FirebaseAuth.getInstance();
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.runTransaction(new Transaction.Function<Void>() {
+        final CatLoadingView loadingView = new CatLoadingView();
+        loadingView.setText("Blogs ");
+        loadingView.show(getSupportFragmentManager(), "");
+        if(mAuth.getCurrentUser() != null){
+            final FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document( mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    int noOfBlogs = documentSnapshot.getLong("noOfTrips").intValue();
+                    SharedPreferences preferences = getSharedPreferences("user", 0);
+                    Editor editor = preferences.edit();
+                    editor.putInt("noOfBlogs", noOfBlogs);
+                    editor.commit();
+                    Toast.makeText(HomeActivity.this, "noOflBlogs added", Toast.LENGTH_SHORT).show();
+                    loadingView.dismiss();
+                }
+            });
+        }
 
-            @Nullable
-            @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                DocumentReference docRef = db.collection("user").document(mAuth.getUid());
-                DocumentSnapshot data = transaction.get(docRef);
-                int noOfBlogs = data.getLong("noOfTrips").intValue();
-
-                SharedPreferences preferences = getSharedPreferences("user", 0);
-                Editor editor = preferences.edit();
-                editor.putInt("noOfBlogs", noOfBlogs);
-                editor.commit();
-                Toast.makeText(HomeActivity.this, "noOflBlogs added", Toast.LENGTH_SHORT).show();
-
-                return null;
-            }
-        });
         Toast.makeText(this, "main: "+mAuth.getUid(), Toast.LENGTH_SHORT).show();
     }
 
