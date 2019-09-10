@@ -56,8 +56,7 @@ import java.util.Collections;
 public class PostDraftActivity extends AppCompatActivity {
 
     public static final int SELECT_PICTURE = 100;
-
-    private static int count = 1;
+    
     private String tripTitle, tripDescription, tripDate;
 
     CatLoadingView loadingView;
@@ -93,7 +92,7 @@ public class PostDraftActivity extends AppCompatActivity {
         drawer = findViewById(R.id.drawer_layout);
         days = new ArrayList<>();
         adapter = new NewDayAdapter(days, this);
-        recyclerView = (RecyclerView) findViewById(R.id.post_draft_activity_content_holder_linearLayout);
+        recyclerView =  findViewById(R.id.post_draft_activity_content_holder_linearLayout);
         linearLayoutManager = new LinearLayoutManager(PostDraftActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(false);
@@ -197,35 +196,6 @@ public class PostDraftActivity extends AppCompatActivity {
             }
         });
     }
-
-
-    private void updateNoOfBlogs(){
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.runTransaction(new Transaction.Function<Void>() {
-            @Nullable
-            @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                DocumentReference docRef = db.collection("users").document(mAuth.getUid());
-                DocumentSnapshot data = transaction.get(docRef);
-                Integer updateNoOfTripOrBlogs = data.getLong("noOfTrips").intValue() + 1;
-                transaction.update(docRef, "noOfTrips", updateNoOfTripOrBlogs);
-                return null;
-            }
-        });
-    }
-
-    /*private void uploadDaysInDatabase(){
-        FirebaseFirestore mRef = FirebaseFirestore.getInstance();
-        ArrayList<NewDay> newDays = adapter.getNewDays();
-        for(int i=0; i<downloadUrl.size(); i++){
-            Day d = new Day(""+i, "TITLE", newDays.get(i).getmDescription(), downloadUrl.get(i));
-            mRef.collection("blogs").document(mAuth.getUid())
-                    .collection("blogs").document(""+noOfBlogs)
-                    .collection("days").document("day"+i).set(d);
-
-        }
-    }*/
-
 
     private void setUpToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
