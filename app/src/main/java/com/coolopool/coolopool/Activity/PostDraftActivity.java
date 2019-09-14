@@ -56,7 +56,7 @@ import java.util.Collections;
 public class PostDraftActivity extends AppCompatActivity {
 
     public static final int SELECT_PICTURE = 100;
-    
+
     private String tripTitle, tripDescription, tripDate;
 
     CatLoadingView loadingView;
@@ -264,6 +264,7 @@ public class PostDraftActivity extends AppCompatActivity {
 
                     }
                 });
+
                 blogUploadingTask.execute(new Blog(tripTitle, tripDescription, tripDate, 0, 0, 0));
             }
 

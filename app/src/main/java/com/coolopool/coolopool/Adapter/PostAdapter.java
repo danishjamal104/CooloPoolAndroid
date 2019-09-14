@@ -7,6 +7,8 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -26,6 +28,7 @@ import com.yuyakaido.android.cardstackview.CardStackView;
 import com.yuyakaido.android.cardstackview.Direction;
 import com.yuyakaido.android.cardstackview.StackFrom;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +68,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
+        String root = Environment.getRootDirectory().toString();
+        File myFile = new File(root + "/profile_images/image.jpg");
+
+        Picasso.get().load(Uri.fromFile(myFile)).fit().into(viewHolder.profilePic);
 
 
         /*

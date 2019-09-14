@@ -30,8 +30,6 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
     View previouslySelectedView;
     int flag = 0; //0: for creating & 1: for displaying
 
-    ArrayList<EditText> desc = new ArrayList<>();
-
 
     public NewDayAdapter(ArrayList<NewDay> newDays, Context context) {
         this.newDays = newDays;
@@ -54,13 +52,10 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
     @Override
     public void onBindViewHolder(@NonNull NewDayAdapter.NewDayViewHolder newDayViewHolder, int i) {
 
-        desc.add(newDayViewHolder.description);
-
         if(newDays.size() == 1){
             previouslySelectedView = newDayViewHolder.view;
             newDayViewHolder.view.setBackground(context.getResources().getDrawable(R.drawable.background));
         }
-
 
         newDayViewHolder.daysCounter.setText(newDays.get(i).getmDays());
         newDayViewHolder.setUpNestedRecyclerView(context, newDays.get(i));
@@ -102,10 +97,6 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
         return newDays;
     }
 
-    public String getDescription(int i){
-        Log.d(">>>>>>>>>>>>>>>>  ", "getDescription: " + desc.size());
-        return (desc.get(i)).getText().toString().trim();
-    }
 
     public void addPhoto(List<Uri> uri){
         Toast.makeText(context, newDays.get(focussedPosition).getmDays(), Toast.LENGTH_SHORT).show();

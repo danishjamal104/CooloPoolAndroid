@@ -3,11 +3,13 @@ package com.coolopool.coolopool.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 
@@ -16,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.provider.SyncStateContract;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,6 +46,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -177,7 +183,62 @@ public class SignUp2Activity extends AppCompatActivity implements View.OnClickLi
         }
 
 
-        authentication.signUp(user, uri, loadingView);
+        storeImage(getContactBitmapFromURI(uri));
+
+        /*authentication.signUp(user, uri, loadingView);*/
+
+        Bitmap bm = null;
+        try {
+            bm = MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+        byte[] b = baos.toByteArray();
+
+        String data = Base64.encodeToString(b, Base64.DEFAULT);
+        Log.d("Log_Test:   ", data);
+
+    }
+
+    private void storeImage(Bitmap bitmap){
+        String root = Environment.getRootDirectory().toString();
+        File myDir = new File(root + "/profile_images");
+        if (!myDir.exists()) {
+            myDir.mkdirs();
+        }
+
+        String fname = "image.jpg";
+        File file = new File (myDir, fname);
+        if (file.exists ())
+            file.delete ();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public  Bitmap getContactBitmapFromURI(Uri uri) {
+        try {
+
+            InputStream input = getContentResolver().openInputStream(uri);
+            if (input == null) {
+                return null;
+            }
+            return BitmapFactory.decodeStream(input);
+        }
+        catch (FileNotFoundException e)
+        {
+
+        }
+        return null;
 
     }
 
