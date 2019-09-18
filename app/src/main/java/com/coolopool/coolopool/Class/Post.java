@@ -13,6 +13,7 @@ public class Post {
 
     ArrayList<Day> days;
     Blog blog;
+    String id;
 
     StackCardAdapter adapter;
     Context context;
@@ -77,4 +78,11 @@ public class Post {
         setUpAdapter();
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

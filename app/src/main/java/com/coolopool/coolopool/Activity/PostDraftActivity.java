@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Backend.Model.Day;
+import com.coolopool.coolopool.Interface.BlogUploadingListener;
 import com.coolopool.coolopool.Interface.TaskCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -229,16 +230,16 @@ public class PostDraftActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+    
 
-    private void uploadBlog() {
-        //uploading picture
+    private void uploadBlog(){
         loadingView.setText("Pics...");
         loadingView.show(getSupportFragmentManager(), "");
         loadingView.setCanceledOnTouchOutside(false);
-        DaysPicUploadingTask daysPicUploadingTask = new DaysPicUploadingTask(new TaskCompleteListener<String>() {
+        BlogUploadingTask blogUploadingTask = new BlogUploadingTask(new BlogUploadingListener() {
             @Override
-            public void onSuccess() {
-                BlogUploadingTask blogUploadingTask = new BlogUploadingTask(new TaskCompleteListener() {
+            public void onSuccess(String blogId) {
+                DaysPicUploadingTask daysPicUploadingTask = new DaysPicUploadingTask(new TaskCompleteListener<String>() {
                     @Override
                     public void onSuccess() {
                         TripUpdatingTask tripUpdatingTask = new TripUpdatingTask(new TaskCompleteListener<String>() {
@@ -264,8 +265,7 @@ public class PostDraftActivity extends AppCompatActivity {
 
                     }
                 });
-
-                blogUploadingTask.execute(new Blog(tripTitle, tripDescription, tripDate, 0, 0, 0));
+                daysPicUploadingTask.execute(blogId);
             }
 
             @Override
@@ -273,17 +273,18 @@ public class PostDraftActivity extends AppCompatActivity {
 
             }
         });
-        daysPicUploadingTask.execute(adapter.getNewDays());
-
+        blogUploadingTask.execute(new Blog(mAuth.getUid(), tripTitle, tripDescription, tripDate, 0, 0, 0));
     }
 
 
-    public class DaysPicUploadingTask extends AsyncTask<ArrayList<NewDay>, Void, Void> {
+    public class DaysPicUploadingTask extends AsyncTask<String, Void, Void> {
 
         FirebaseAuth mAuth;
 
         TaskCompleteListener<String> mCallback;
         Exception mException;
+
+        String blogId;
 
         ArrayList<ArrayList<String>> resultUrl;
 
@@ -292,16 +293,16 @@ public class PostDraftActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(ArrayList<NewDay>... arrayLists) {
-            ArrayList<NewDay> newDays = arrayLists[0];
+        protected Void doInBackground(String... strings) {
+            blogId = strings[0];
+            ArrayList<NewDay> newDays = adapter.getNewDays();
             ArrayList<String> descriptio = getDescriptionOfEachDay();
             Log.d(">>>>>>>>>>>>>>>>> ", "doInBackground: size: " + newDays.get(0).getmImageUri().size());
             for(int i=0; i<newDays.size(); i++){
                 if(newDays.get(i).getmImageUri().size() > 0){
                     FirebaseFirestore mRef = FirebaseFirestore.getInstance();
                     Day d = new Day(""+i, "TITLE", descriptio.get(i), new ArrayList<String>());
-                    mRef.collection("blogs").document(mAuth.getUid())
-                            .collection("blogs").document(""+noOfBlogs)
+                    mRef.collection("blogs").document(blogId)
                             .collection("days").document("day"+i).set(d);
                     storePicsOfSingleDay(getUriOfSingleDay(newDays.get(i)), i);
                 }
@@ -321,6 +322,8 @@ public class PostDraftActivity extends AppCompatActivity {
             }
             return result;
         }
+
+
 
         @Override
         protected void onPreExecute() {
@@ -371,8 +374,7 @@ public class PostDraftActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         FirebaseFirestore mRef = FirebaseFirestore.getInstance();
-                                        mRef.collection("blogs").document(mAuth.getUid())
-                                                .collection("blogs").document(""+noOfBlogs)
+                                        mRef.collection("blogs").document(blogId)
                                                 .collection("days").document("day"+dayCounter)
                                                 .update("images", FieldValue.arrayUnion(uri.toString()));
                                     }
@@ -389,22 +391,29 @@ public class PostDraftActivity extends AppCompatActivity {
 
     }
 
-    public class BlogUploadingTask extends AsyncTask<Blog, Void, Void>{
+    public class BlogUploadingTask extends AsyncTask<Blog, Void, String>{
 
         FirebaseFirestore mRef;
 
-        TaskCompleteListener<String> mCallback;
+        BlogUploadingListener<String> mCallback;
         Exception mException;
 
-        public BlogUploadingTask(TaskCompleteListener callback) {
+        String id;
+
+        public BlogUploadingTask(BlogUploadingListener callback) {
             mCallback = callback;
         }
 
         @Override
-        protected Void doInBackground(Blog... blogs) {
-            mRef.collection("blogs").document(mAuth.getUid())
-                    .collection("blogs").document(""+noOfBlogs).set(blogs[0]);
-            return null;
+        protected String doInBackground(Blog... blogs) {
+            mRef.collection("blogs").add(blogs[0]).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    id = documentReference.getId();
+                    mCallback.onSuccess(id);
+                }
+            });
+            return id;
         }
 
         @Override
@@ -415,15 +424,8 @@ public class PostDraftActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if (mCallback != null) {
-                if (mException == null) {
-                    mCallback.onSuccess();
-                } else {
-                    mCallback.onFailure(mException);
-                }
-            }
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
         }
 
     }

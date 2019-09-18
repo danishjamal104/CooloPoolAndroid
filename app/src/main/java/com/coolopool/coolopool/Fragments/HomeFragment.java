@@ -91,27 +91,6 @@ public class HomeFragment extends Fragment {
         task.execute();
     }
 
-    public class FetchCurrentDayTask extends AsyncTask<DocumentReference, Void, ArrayList<Day>>{
-
-        ArrayList<Day> result = new ArrayList<>();
-
-        @Override
-        protected ArrayList<Day> doInBackground(DocumentReference... documentReferences) {
-            DocumentReference mRef = documentReferences[0];
-            mRef.collection("days").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    for(final QueryDocumentSnapshot daysDoc: task.getResult()){
-                        Day currentDay = daysDoc.toObject(Day.class);
-                        result.add(currentDay);
-                        Log.d(">>>>>>>>>>>>>>>>> ", "onSuccess: " + currentDay.getImages().size());
-                    }
-                }
-            });
-            return null;
-        }
-    }
-
     public class FetchBlogTask extends AsyncTask<Void, Void, ArrayList<Post>>{
 
         FirebaseFirestore mRef = FirebaseFirestore.getInstance();
@@ -126,7 +105,7 @@ public class HomeFragment extends Fragment {
         @Override
         protected ArrayList<Post> doInBackground(Void... voids) {
             final ArrayList<Post> posts = new ArrayList<>();
-            ArrayList<Blog> blogs = new ArrayList<>();
+
 
             mRef.collection("blogs").document(mAuth.getUid())
                     .collection("blogs").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -141,7 +120,8 @@ public class HomeFragment extends Fragment {
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     final Blog currentBlog = documentSnapshot.toObject(Blog.class);
                                     final Post currentPost = new Post(new ArrayList<Day>(), currentBlog, getActivity());
-                                    posts.add(currentPost);
+                                    currentPost.setId(document.getId());
+                                    //posts.add(currentPost);
                                     postAdapter.addPost(currentPost);
                                     postAdapter.notifyDataSetChanged();
 

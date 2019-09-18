@@ -62,7 +62,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post current_post = posts.get(i);
 
         viewHolder.title.setText(current_post.getBlog().getTitle());
-        viewHolder.userName.setText("Uid");
+        viewHolder.userName.setText(current_post.getId());
         viewHolder.setUpNestedStackView(mContext, current_post);
 
         viewHolder.v.setOnClickListener(new View.OnClickListener() {

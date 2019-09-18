@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class Blog {
 
+    String id;
     String title;
     String description;
     String date;
@@ -15,7 +16,8 @@ public class Blog {
     public Blog() {
     }
 
-    public Blog(String title, String description, String date, int views, int likes, int experienced) {
+    public Blog(String id, String title, String description, String date, int views, int likes, int experienced) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.date = date;
@@ -72,4 +74,11 @@ public class Blog {
         this.experienced = experienced;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
