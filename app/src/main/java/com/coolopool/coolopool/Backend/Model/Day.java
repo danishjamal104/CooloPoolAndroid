@@ -11,6 +11,9 @@ public class Day {
     String description;
     ArrayList<String> images;
 
+    public Day() {
+    }
+
     public Day(String dayCount, String title, String description, ArrayList<String> images) {
         this.dayCount = dayCount;
         this.title = title;

@@ -32,6 +32,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
     </RelativeLayout>
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cart_activity_cart_item_recyclerView"
         android:layout_width="match_parent"

@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 
 import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Backend.Model.Day;
-import com.coolopool.coolopool.Interface.DataUploadingCallback;
+import com.coolopool.coolopool.Interface.TaskCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -235,13 +235,13 @@ public class PostDraftActivity extends AppCompatActivity {
         loadingView.setText("Pics...");
         loadingView.show(getSupportFragmentManager(), "");
         loadingView.setCanceledOnTouchOutside(false);
-        DaysPicUploadingTask daysPicUploadingTask = new DaysPicUploadingTask(new DataUploadingCallback<String>() {
+        DaysPicUploadingTask daysPicUploadingTask = new DaysPicUploadingTask(new TaskCompleteListener<String>() {
             @Override
             public void onSuccess() {
-                BlogUploadingTask blogUploadingTask = new BlogUploadingTask(new DataUploadingCallback() {
+                BlogUploadingTask blogUploadingTask = new BlogUploadingTask(new TaskCompleteListener() {
                     @Override
                     public void onSuccess() {
-                        TripUpdatingTask tripUpdatingTask = new TripUpdatingTask(new DataUploadingCallback<String>() {
+                        TripUpdatingTask tripUpdatingTask = new TripUpdatingTask(new TaskCompleteListener<String>() {
                             @Override
                             public void onSuccess() {
                                 loadingView.dismiss();
@@ -282,12 +282,12 @@ public class PostDraftActivity extends AppCompatActivity {
 
         FirebaseAuth mAuth;
 
-        DataUploadingCallback<String> mCallback;
+        TaskCompleteListener<String> mCallback;
         Exception mException;
 
         ArrayList<ArrayList<String>> resultUrl;
 
-        public DaysPicUploadingTask(DataUploadingCallback<String> mCallback) {
+        public DaysPicUploadingTask(TaskCompleteListener<String> mCallback) {
             this.mCallback = mCallback;
         }
 
@@ -393,10 +393,10 @@ public class PostDraftActivity extends AppCompatActivity {
 
         FirebaseFirestore mRef;
 
-        DataUploadingCallback<String> mCallback;
+        TaskCompleteListener<String> mCallback;
         Exception mException;
 
-        public BlogUploadingTask(DataUploadingCallback callback) {
+        public BlogUploadingTask(TaskCompleteListener callback) {
             mCallback = callback;
         }
 
@@ -432,10 +432,10 @@ public class PostDraftActivity extends AppCompatActivity {
 
         FirebaseFirestore db;
 
-        DataUploadingCallback<String> mCallback;
+        TaskCompleteListener<String> mCallback;
         Exception mException;
 
-        public TripUpdatingTask(DataUploadingCallback<String> mCallback) {
+        public TripUpdatingTask(TaskCompleteListener<String> mCallback) {
             this.mCallback = mCallback;
         }
 

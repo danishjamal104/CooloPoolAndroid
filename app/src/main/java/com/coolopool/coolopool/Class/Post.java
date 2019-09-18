@@ -1,61 +1,80 @@
 package com.coolopool.coolopool.Class;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.coolopool.coolopool.Adapter.StackCardAdapter;
+import com.coolopool.coolopool.Backend.Model.Blog;
+import com.coolopool.coolopool.Backend.Model.Day;
+
+import java.util.ArrayList;
 
 public class Post {
 
-    String[] imageUrl;
-    String title;
-    String userInfo;
-    String[] description;
-    int heartCounts;
+    ArrayList<Day> days;
+    Blog blog;
+
     StackCardAdapter adapter;
     Context context;
 
-    public Post(String[] imageUrl, String title, String[] description, int heartCount, Context context) {
-        this.imageUrl = imageUrl;
-        this.title = title;
-        this.description = description;
+    public Post(ArrayList<Day> days, Blog blog, Context context) {
+        this.days = days;
+        this.blog = blog;
         this.context = context;
-        this.userInfo = "Default";
-        this.setUpAdapter();
+        setUpAdapter();
     }
 
     private void setUpAdapter(){
-        adapter = new StackCardAdapter(imageUrl, description, context);
+        ArrayList<String> imageUrl = new ArrayList<>();
+        ArrayList<String> imageDesc = new ArrayList<>();
+        for(int i=0; i<days.size(); i++){
+            imageUrl.addAll(days.get(i).getImages());
+            imageDesc.add(days.get(i).getdescription());
+        }
+        Log.d(">>>>>>>>>>>>>>>> ", "setUpAdapter: "+imageUrl.size());
+        Log.d(">>>>>>>>>>>>>>>> ", "setUpAdapter: "+imageDesc.size());
+        adapter = new StackCardAdapter(imageUrl, imageDesc, context);
     }
 
     public StackCardAdapter getAdapter() {
         return adapter;
     }
 
-    public int getHeartCounts() {
-        return heartCounts;
+    public ArrayList<Day> getDays() {
+        return days;
     }
 
-    public String getUserInfo() {
-        return userInfo;
+    public void setDays(ArrayList<Day> days) {
+        this.days = days;
     }
 
-    public String getTitle() {
-        return title;
+    public Blog getBlog() {
+        return blog;
     }
 
-    public int getImageLen(){
-        return imageUrl.length;
+    public void setBlog(Blog blog) {
+        this.blog = blog;
     }
 
-    public String[] getImageUrl() {
-        return imageUrl;
-    }
-
-    public String[] getDescription() {
-        return description;
+    public void setAdapter(StackCardAdapter adapter) {
+        this.adapter = adapter;
     }
 
     public Context getContext() {
         return context;
     }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public void addDays(Day day){
+        days.add(day);
+    }
+
+    public void addAllDays(ArrayList<Day> days){
+        days.addAll(days);
+        setUpAdapter();
+    }
+
 }

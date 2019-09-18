@@ -15,18 +15,20 @@ import com.coolopool.coolopool.Activity.PostActivity;
 import com.coolopool.coolopool.R;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 public class StackCardAdapter extends RecyclerView.Adapter<StackCardAdapter.StackCardViewHolder> {
 
-    String[] imageUrl;
-    String[] description;
+    ArrayList<String> imageUrl;
+    ArrayList<String> description;
     Context mContext;
 
 
 
-    public StackCardAdapter(String[] imageUrl, String[] description, Context context) {
+    public StackCardAdapter(ArrayList<String> imageUrl, ArrayList<String> description, Context mContext) {
         this.imageUrl = imageUrl;
         this.description = description;
-        mContext = context;
+        this.mContext = mContext;
     }
 
     @NonNull
@@ -38,10 +40,10 @@ public class StackCardAdapter extends RecyclerView.Adapter<StackCardAdapter.Stac
 
     @Override
     public void onBindViewHolder(@NonNull StackCardViewHolder holder, int position) {
-        if(imageUrl[position] != null) {
-            Picasso.get().load(imageUrl[position]).into(holder.imageView);
+        if(imageUrl.get(position) != null) {
+            Picasso.get().load(imageUrl.get(position)).into(holder.imageView);
         }
-        holder.description.setText(description[position]);
+        holder.description.setText(description.get(position));
         holder.v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,12 +54,12 @@ public class StackCardAdapter extends RecyclerView.Adapter<StackCardAdapter.Stac
     }
 
     public String getDes(int position){
-        return description[position];
+        return description.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return imageUrl.length;
+        return imageUrl.size();
     }
 
     public class StackCardViewHolder extends RecyclerView.ViewHolder{

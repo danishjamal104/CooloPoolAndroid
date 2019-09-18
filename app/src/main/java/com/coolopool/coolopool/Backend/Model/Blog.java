@@ -12,6 +12,9 @@ public class Blog {
     int likes;
     int experienced;
 
+    public Blog() {
+    }
+
     public Blog(String title, String description, String date, int views, int likes, int experienced) {
         this.title = title;
         this.description = description;

@@ -1,38 +1,34 @@
 package com.coolopool.coolopool.Fragments;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
-
+import com.coolopool.coolopool.Backend.Model.Blog;
+import com.coolopool.coolopool.Backend.Model.Day;
 import com.coolopool.coolopool.Class.Post;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.coolopool.coolopool.Interface.TaskCompleteListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import com.coolopool.coolopool.Adapter.PostAdapter;
-import com.coolopool.coolopool.Application.MyApplication;
-import com.coolopool.coolopool.Class.HomePageBlog;
-import com.coolopool.coolopool.Interface.TripClient;
 import com.coolopool.coolopool.R;
-import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
-import com.yuyakaido.android.cardstackview.CardStackListener;
-import com.yuyakaido.android.cardstackview.CardStackView;
-import com.yuyakaido.android.cardstackview.Direction;
-import com.yuyakaido.android.cardstackview.StackFrom;
-
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
-import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,14 +36,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class HomeFragment extends Fragment {
 
     RecyclerView recyclerView;
-    String[] images;
-    String[] titles;
-    String[] descriptions;
-    int[] heartCounts;
-    RecyclerView.LayoutManager layoutManager;
+
     PostAdapter postAdapter;
-    FloatingActionButton addPost;
     View view;
+
+    FirebaseAuth mAuth;
+
+    int flag;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -56,8 +51,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        mAuth = FirebaseAuth.getInstance();
+        postAdapter = new PostAdapter(new ArrayList<Post>(), getActivity());
     }
 
     @Override
@@ -67,15 +62,14 @@ public class HomeFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        addPost = view.findViewById(R.id.fab);
-
+        init();
         getBlogs();
 
         return view;
     }
 
     private void init(){
-        recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
+        recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(false);
         recyclerView.setAdapter(postAdapter);
@@ -83,50 +77,115 @@ public class HomeFragment extends Fragment {
     }
 
     private void getBlogs() {
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://raw.githubusercontent.com/samyak-uttam/demo/master/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        TripClient client = retrofit.create(TripClient.class);
-
-        Call<List<HomePageBlog>> call = client.getBlogs();
-
-        call.enqueue(new Callback<List<HomePageBlog>>() {
+        FetchBlogTask task = new FetchBlogTask(new TaskCompleteListener<String>() {
             @Override
-            public void onResponse(Call<List<HomePageBlog>> call, Response<List<HomePageBlog>> response) {
-
-                List<HomePageBlog> blogs = response.body();
-
-                int size = blogs.size();
-                titles = new String[size];
-                descriptions = new String[size];
-                heartCounts = new int[size];
-                images = new String[size];
-
-                for(int i = 0; i < blogs.size(); i++){
-                    titles[i] = blogs.get(i).getTitle();
-                    descriptions[i] = blogs.get(i).getDescription();
-                    heartCounts[i] = blogs.get(i).getHeartCount();
-                    images[i] = blogs.get(i).getImageUrl();
-                }
-
-                ArrayList<Post> posts = new ArrayList<>();
-                for(int i=0; i<size; i++){
-                    posts.add(new Post(images, titles[i], descriptions, heartCounts[i], getActivity()));
-                }
-
-                postAdapter = new PostAdapter(posts, getActivity());
-                init();
-
+            public void onSuccess() {
+                Toast.makeText(getActivity(), "Post loaded", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onFailure(Call<List<HomePageBlog>> call, Throwable t) {
-                Toast.makeText(getActivity(), "Can't fetch data.", Toast.LENGTH_SHORT).show();
+            public void onFailure(Exception e) {
+
             }
         });
+        task.execute();
+    }
+
+    public class FetchCurrentDayTask extends AsyncTask<DocumentReference, Void, ArrayList<Day>>{
+
+        ArrayList<Day> result = new ArrayList<>();
+
+        @Override
+        protected ArrayList<Day> doInBackground(DocumentReference... documentReferences) {
+            DocumentReference mRef = documentReferences[0];
+            mRef.collection("days").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    for(final QueryDocumentSnapshot daysDoc: task.getResult()){
+                        Day currentDay = daysDoc.toObject(Day.class);
+                        result.add(currentDay);
+                        Log.d(">>>>>>>>>>>>>>>>> ", "onSuccess: " + currentDay.getImages().size());
+                    }
+                }
+            });
+            return null;
+        }
+    }
+
+    public class FetchBlogTask extends AsyncTask<Void, Void, ArrayList<Post>>{
+
+        FirebaseFirestore mRef = FirebaseFirestore.getInstance();
+
+        TaskCompleteListener<String> mCallback;
+        Exception mException;
+
+        public FetchBlogTask(TaskCompleteListener<String> mCallback) {
+            this.mCallback = mCallback;
+        }
+
+        @Override
+        protected ArrayList<Post> doInBackground(Void... voids) {
+            final ArrayList<Post> posts = new ArrayList<>();
+            ArrayList<Blog> blogs = new ArrayList<>();
+
+            mRef.collection("blogs").document(mAuth.getUid())
+                    .collection("blogs").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+
+                        for(final QueryDocumentSnapshot document: task.getResult()){
+
+                            document.getReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    final Blog currentBlog = documentSnapshot.toObject(Blog.class);
+                                    final Post currentPost = new Post(new ArrayList<Day>(), currentBlog, getActivity());
+                                    posts.add(currentPost);
+                                    postAdapter.addPost(currentPost);
+                                    postAdapter.notifyDataSetChanged();
+
+
+                                    document.getReference().collection("days").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            ArrayList<Day> days = new ArrayList<>();
+                                            for(final QueryDocumentSnapshot daysDoc: task.getResult()){
+                                                Day currentDay = daysDoc.toObject(Day.class);
+                                                days.add(currentDay);
+                                            }
+                                            currentPost.addAllDays(days);
+                                        }
+                                    });
+
+                                }
+                            });
+
+                        }
+                    }
+                }
+            });
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mRef = FirebaseFirestore.getInstance();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Post> postArrayList) {
+            super.onPostExecute(postArrayList);
+            if(mCallback != null){
+                if(mException == null){
+                    mCallback.onSuccess();
+                } else {
+                    mCallback.onFailure(mException);
+                }
+            }
+        }
     }
 
 

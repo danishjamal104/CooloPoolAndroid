@@ -21,6 +21,10 @@ import android.widget.Toast;
 import com.coolopool.coolopool.Activity.PostActivity;
 import com.coolopool.coolopool.Class.Post;
 import com.coolopool.coolopool.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackListener;
@@ -57,8 +61,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         Post current_post = posts.get(i);
 
-        viewHolder.title.setText(current_post.getTitle());
-        viewHolder.userName.setText(current_post.getUserInfo());
+        viewHolder.title.setText(current_post.getBlog().getTitle());
+        viewHolder.userName.setText("Uid");
         viewHolder.setUpNestedStackView(mContext, current_post);
 
         viewHolder.v.setOnClickListener(new View.OnClickListener() {
@@ -68,10 +72,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        storage.getReference("Users/profileImages/"+mAuth.getUid()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                Uri uri = task.getResult();
+                Picasso.get().load(uri).fit().into(viewHolder.profilePic);
+                Log.d(">>>>>>>>>>>>>>> ", "profile image: "+uri.toString());
+            }
+        });
+
         String root = Environment.getRootDirectory().toString();
         File myFile = new File(root + "/profile_images/image.jpg");
 
-        Picasso.get().load(Uri.fromFile(myFile)).fit().into(viewHolder.profilePic);
+        //Picasso.get().load(Uri.fromFile(myFile)).fit().into(viewHolder.profilePic);
 
 
         /*
@@ -89,7 +104,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });*/
 
-        Picasso.get().load(R.drawable.photo2).fit().centerCrop().into(viewHolder.profilePic);
+        //Picasso.get().load(R.drawable.photo2).fit().centerCrop().into(viewHolder.profilePic);
 
 
     }
@@ -97,6 +112,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public int getItemCount() {
         return posts.size();
+    }
+
+    public void addAllPosts(ArrayList<Post> p){
+        posts.addAll(p);
+        notifyDataSetChanged();
+    }
+
+    public void addPost(Post post){
+        posts.add(post);
+        notifyDataSetChanged();
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder{
