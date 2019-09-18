@@ -230,7 +230,7 @@ public class PostDraftActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-    
+
 
     private void uploadBlog(){
         loadingView.setText("Pics...");

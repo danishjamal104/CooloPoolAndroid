@@ -107,8 +107,7 @@ public class HomeFragment extends Fragment {
             final ArrayList<Post> posts = new ArrayList<>();
 
 
-            mRef.collection("blogs").document(mAuth.getUid())
-                    .collection("blogs").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            mRef.collection("blogs").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
@@ -122,8 +121,6 @@ public class HomeFragment extends Fragment {
                                     final Post currentPost = new Post(new ArrayList<Day>(), currentBlog, getActivity());
                                     currentPost.setId(document.getId());
                                     //posts.add(currentPost);
-                                    postAdapter.addPost(currentPost);
-                                    postAdapter.notifyDataSetChanged();
 
 
                                     document.getReference().collection("days").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -135,8 +132,11 @@ public class HomeFragment extends Fragment {
                                                 days.add(currentDay);
                                             }
                                             currentPost.addAllDays(days);
+                                            currentPost.getAdapter().notifyDataSetChanged();
                                         }
                                     });
+                                    postAdapter.addPost(currentPost);
+                                    postAdapter.notifyDataSetChanged();
 
                                 }
                             });
