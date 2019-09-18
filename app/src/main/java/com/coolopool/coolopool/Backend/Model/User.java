@@ -1,5 +1,7 @@
 package com.coolopool.coolopool.Backend.Model;
 
+import java.util.ArrayList;
+
 public class User {
 
     String email;
@@ -11,6 +13,10 @@ public class User {
     int noOfPhotos;
     int  noOfFollowers;
     String uid;
+    ArrayList<String> followers;
+
+    public User() {
+    }
 
     public User(String username, String password, String name, String phoneNumber, String email) {
         this.email = email;
@@ -21,6 +27,7 @@ public class User {
         this.noOfFollowers = 0;
         this.noOfPhotos = 0;
         this.noOfTrips = 0;
+        this.followers = new ArrayList<>();
     }
 
     public User(String email, String username, String name, String password, String phoneNumber, int noOfTrips, int noOfPhotos, int noOfFollowers) {
@@ -32,6 +39,7 @@ public class User {
         this.noOfTrips = noOfTrips;
         this.noOfPhotos = noOfPhotos;
         this.noOfFollowers = noOfFollowers;
+        this.followers = new ArrayList<>();
     }
 
     public String getEmail() {
@@ -104,5 +112,13 @@ public class User {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public ArrayList<String> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(ArrayList<String> followers) {
+        this.followers = followers;
     }
 }

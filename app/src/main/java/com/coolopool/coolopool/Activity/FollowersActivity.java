@@ -1,5 +1,6 @@
 package com.coolopool.coolopool.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,6 +11,11 @@ import android.widget.EditText;
 import com.coolopool.coolopool.Adapter.FollowersListAdapter;
 import com.coolopool.coolopool.Class.followList;
 import com.coolopool.coolopool.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -17,6 +23,8 @@ public class FollowersActivity extends AppCompatActivity {
 
     RecyclerView mFollowerList;
     EditText mfollowersSearchBtn;
+
+    ArrayList<followList> followersLists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +39,7 @@ public class FollowersActivity extends AppCompatActivity {
             }
         });
 
-        ArrayList<followList> followersLists = new ArrayList<>();
+        followersLists = new ArrayList<>();
 
         followersLists.add(new followList(R.drawable.userfacepic,"Leo","Rahul Singh"));
         followersLists.add(new followList(R.drawable.userfacepic,"Leo","Rahul Singh"));
@@ -49,5 +57,17 @@ public class FollowersActivity extends AppCompatActivity {
         mFollowerList = findViewById(R.id.Followers_RecyclerView);
         mFollowerList.setLayoutManager(new LinearLayoutManager(this));
         mFollowerList.setAdapter(new FollowersListAdapter(followersLists,this));
+    }
+
+    private void fetchUser(){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore mRef = FirebaseFirestore.getInstance();
+        mRef.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+            }
+        });
+
     }
 }

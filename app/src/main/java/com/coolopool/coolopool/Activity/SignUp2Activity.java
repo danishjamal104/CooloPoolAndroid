@@ -185,21 +185,7 @@ public class SignUp2Activity extends AppCompatActivity implements View.OnClickLi
 
         storeImage(getContactBitmapFromURI(uri));
 
-        /*authentication.signUp(user, uri, loadingView);*/
-
-        Bitmap bm = null;
-        try {
-            bm = MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        //MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
-        byte[] b = baos.toByteArray();
-
-        String data = Base64.encodeToString(b, Base64.DEFAULT);
-        Log.d("Log_Test:   ", data);
+        authentication.signUp(user, uri, loadingView);
 
     }
 
@@ -264,7 +250,7 @@ public class SignUp2Activity extends AppCompatActivity implements View.OnClickLi
         //uri = Uri.parse(Uri.decode(googleImageUrl));
         //Picasso.get().load(uri).into(mUserProfilePic);
     }
-//https://coolopoolandroid.firebaseapp.com/__/auth/handler
+
     private void getIntentData() {
 
         Intent intent = getIntent();
