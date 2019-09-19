@@ -247,6 +247,7 @@ public class HomeActivity extends AppCompatActivity {
                     SharedPreferences preferences = getSharedPreferences("user", 0);
                     Editor editor = preferences.edit();
                     editor.putInt("noOfBlogs", noOfBlogs);
+                    editor.putString("name", documentSnapshot.getString("name"));
                     editor.commit();
                     Toast.makeText(HomeActivity.this, "noOflBlogs added", Toast.LENGTH_SHORT).show();
                     loadingView.dismiss();

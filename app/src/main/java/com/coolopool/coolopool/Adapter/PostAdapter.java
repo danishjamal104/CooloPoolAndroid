@@ -7,6 +7,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -15,15 +16,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coolopool.coolopool.Activity.PostActivity;
+import com.coolopool.coolopool.Activity.ProfileActivity;
 import com.coolopool.coolopool.Class.Post;
 import com.coolopool.coolopool.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
@@ -59,11 +66,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull final PostViewHolder viewHolder, int i) {
 
-        Post current_post = posts.get(i);
+        final Post current_post = posts.get(i);
 
         viewHolder.title.setText(current_post.getBlog().getTitle());
-        viewHolder.userName.setText(current_post.getId());
+        FirebaseFirestore mRef = FirebaseFirestore.getInstance();
+        mRef.collection("users/").document(FirebaseAuth.getInstance().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                viewHolder.userName.setText(documentSnapshot.getString("name"));
+            }
+        });
         viewHolder.setUpNestedStackView(mContext, current_post);
+
+        viewHolder.profileSection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewHolder.openCurrentProfile(mContext, current_post.getId());
+            }
+        });
 
         viewHolder.v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,31 +103,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
-        String root = Environment.getRootDirectory().toString();
-        File myFile = new File(root + "/profile_images/image.jpg");
-
-        //Picasso.get().load(Uri.fromFile(myFile)).fit().into(viewHolder.profilePic);
-
-
-        /*
-        viewHolder.v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mContext != null){
-                    Intent postIntent = new Intent(mContext, PostActivity.class);
-                    Pair<View, String> image = Pair.create((View)viewHolder.postimage, "POST_IMAGE");
-                    ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity) mContext, image);
-
-                    mContext.startActivity(postIntent, activityOptions.toBundle());
-                }
-
-            }
-        });*/
-
-        //Picasso.get().load(R.drawable.photo2).fit().centerCrop().into(viewHolder.profilePic);
-
 
     }
+
 
     @Override
     public int getItemCount() {
@@ -130,11 +128,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         TextView userName;
         ImageView profilePic;
         CardStackView stackView;
+        LinearLayout profileSection;
         View v;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             v = itemView;
+            profileSection = itemView.findViewById(R.id.userInfo);
             title = itemView.findViewById(R.id.title);
             userName = itemView.findViewById(R.id.userName);
             stackView = itemView.findViewById(R.id.card_stack_view);
@@ -144,6 +144,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         public void openCurrentPost(Context mContext){
             Intent postIntent = new Intent(mContext, PostActivity.class);
             mContext.startActivity(postIntent);
+        }
+
+        public void openCurrentProfile(Context context, String postId){
+            Intent profileIntent = new Intent(context, ProfileActivity.class);
+            profileIntent.putExtra("BLOG_ID", postId);
+            context.startActivity(profileIntent);
         }
 
         public void setUpNestedStackView(final Context context, final Post post){
