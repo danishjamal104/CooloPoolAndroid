@@ -2,6 +2,7 @@ package com.coolopool.coolopool.Fragments;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,12 +13,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.coolopool.coolopool.Activity.FollowersActivity;
 import com.coolopool.coolopool.Activity.NewPicPostActivity;
 import com.coolopool.coolopool.Activity.NewPostActivity;
+import com.coolopool.coolopool.Activity.ProfileActivity;
 import com.coolopool.coolopool.Activity.ProfileSettingActivity;
 import com.coolopool.coolopool.Activity.SettingActivity;
 import com.coolopool.coolopool.Adapter.PhotoListAdapter;
@@ -28,17 +32,22 @@ import com.coolopool.coolopool.Class.Photolist;
 import com.coolopool.coolopool.Class.Triplist;
 import com.coolopool.coolopool.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -51,6 +60,9 @@ public class ProfileFragment extends Fragment {
     RecyclerView mTripList,mPhotoList;
     TextView  mAddPost, mAddPhoto, mSettingButton, mEditProfileButton;
     LinearLayout  mFollowButton;
+
+    public PhotoListAdapter photoAdapter;
+    public TripListAdapter tripAdapter;
 
     TextView noOfTrips, noOfFollowers, noOfPhotos;
 
@@ -97,18 +109,9 @@ public class ProfileFragment extends Fragment {
 
         // this is for Trip List View
 
-        ArrayList<Triplist> tripList = new ArrayList<>();
-
-        tripList.add(new Triplist(R.drawable.trip1,"Goa","2"));
-        tripList.add(new Triplist(R.drawable.trip2,"Sikkim","2"));
-        tripList.add(new Triplist(R.drawable.trip1,"Goa","2"));
-        tripList.add(new Triplist(R.drawable.trip2,"Sikkim","2"));
-        tripList.add(new Triplist(R.drawable.trip1,"Goa","2"));
-        tripList.add(new Triplist(R.drawable.trip2,"Sikkim","2"));
 
         mTripList = v.findViewById(R.id.Trip_RecyclerView);
-        mTripList.setLayoutManager(new LinearLayoutManager(MyApplication.getAppContext(), LinearLayoutManager.HORIZONTAL, false));
-        mTripList.setAdapter(new TripListAdapter(tripList,MyApplication.getAppContext()));
+        setUpTrips();
 
         // this is for Photo List View
 
@@ -122,8 +125,8 @@ public class ProfileFragment extends Fragment {
         photoList.add(new Photolist(R.drawable.photo3,"BedRoom","OYO"));
 
         mPhotoList = v.findViewById(R.id.Photo_RecyclerView);
-        mPhotoList.setLayoutManager(new LinearLayoutManager(MyApplication.getAppContext(), LinearLayoutManager.HORIZONTAL,false));
-        mPhotoList.setAdapter(new PhotoListAdapter(photoList,MyApplication.getAppContext()));
+        setUpPhotos();
+
 
         mFollowButton = v.findViewById(R.id.followbtn);
         mFollowButton.setOnClickListener(new View.OnClickListener() {
@@ -161,6 +164,19 @@ public class ProfileFragment extends Fragment {
         return v;
     }
 
+    private void setUpTrips(){
+        tripAdapter = new TripListAdapter(new ArrayList<Triplist>() , getActivity());
+        mTripList.setLayoutManager(new LinearLayoutManager(MyApplication.getAppContext(), LinearLayoutManager.HORIZONTAL, false));
+        mTripList.setAdapter(tripAdapter);
+    }
+
+    private void setUpPhotos(){
+        photoAdapter = new PhotoListAdapter(new ArrayList<String>(), getActivity());
+        mPhotoList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        mPhotoList.setHasFixedSize(false);
+        mPhotoList.setAdapter(photoAdapter);
+    }
+
     private void setUpBackEnd(){
         mAuth = FirebaseAuth.getInstance();
         FirebaseStorage storageReference = FirebaseStorage.getInstance();
@@ -188,11 +204,75 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                 });
+        FetchData fetchData = new FetchData();
+        fetchData.execute();
 
     }
 
     public View getView() {
         return v;
+    }
+
+    public class FetchData extends AsyncTask<Void, Void, ArrayList<ArrayList<String>>>{
+
+        FirebaseFirestore mRef;
+        FirebaseStorage mStorage;
+
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+
+        @Override
+        protected ArrayList<ArrayList<String>> doInBackground(Void... voids) {
+
+            Query query = mRef.collection("blogs").whereEqualTo("id", mAuth.getUid());
+
+            query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                    Log.d("Documents ", "onPostExecute: "+documents.size());
+                    for(DocumentSnapshot documentSnapshot: documents){
+
+                        mRef.collection("blogs").document(documentSnapshot.getId())
+                                .collection("days").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                List<DocumentSnapshot> days = queryDocumentSnapshots.getDocuments();
+                                ArrayList<String> blogPics = new ArrayList<>();
+                                for(DocumentSnapshot currentDay: days){
+                                    blogPics.addAll((List<String>)currentDay.get("images"));
+                                }
+                                result.add(blogPics);
+                                photoAdapter.addAllUrl(blogPics);
+                                photoAdapter.notifyDataSetChanged();
+
+                                if(blogPics.size() > 0){
+                                    tripAdapter.addTrip(new Triplist(blogPics.get(0),"Place", "2"));
+                                    tripAdapter.notifyDataSetChanged();
+                                }
+                                Log.d("???????????/ ", "onPostExecute: "+result.size());
+
+                            }
+                        });
+                    }
+                }
+            });
+
+
+            return result;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mRef = FirebaseFirestore.getInstance();
+            mStorage = FirebaseStorage.getInstance();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<ArrayList<String>> arrayLists) {
+            super.onPostExecute(arrayLists);
+
+        }
     }
 
 }

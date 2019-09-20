@@ -13,8 +13,10 @@ import android.widget.TextView;
 
 import com.coolopool.coolopool.Class.Triplist;
 import com.coolopool.coolopool.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripViewHolder> {
 
@@ -37,7 +39,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
     public void onBindViewHolder(@NonNull TripViewHolder tripViewHolder, int i) {
     Triplist Trip = TripList.get(i);
 
-    tripViewHolder.mTripPhoto.setImageResource(Trip.getmTripPic());
+    Picasso.get().load(Trip.getmTripPic()).fit().into(tripViewHolder.mTripPhoto);
     tripViewHolder.mTripPlaceName.setText(Trip.getmTripPlace());
     tripViewHolder.mNoOfTripDays.setText(Trip.getmNoOfTripDays() + " days");
     }
@@ -45,6 +47,14 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
     @Override
     public int getItemCount() {
         return TripList.size();
+    }
+
+    public void addTrip(Triplist trip){
+        TripList.add(trip);
+    }
+
+    public void addTrip(List<Triplist> trips){
+        TripList.addAll(trips);
     }
 
     public class TripViewHolder extends RecyclerView.ViewHolder{

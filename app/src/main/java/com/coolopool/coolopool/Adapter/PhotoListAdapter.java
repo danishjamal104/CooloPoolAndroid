@@ -3,24 +3,27 @@ package com.coolopool.coolopool.Adapter;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.coolopool.coolopool.Class.Photolist;
 import com.coolopool.coolopool.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PhotoListAdapter extends  RecyclerView.Adapter<PhotoListAdapter.PhotoViewHolder>{
 
-    private ArrayList<Photolist> PhotoList;
+    private ArrayList<String> mUrl;
     Context context;
 
-    public PhotoListAdapter(ArrayList<Photolist> PhotoList, Context context){
-        this.PhotoList = PhotoList;
+    public PhotoListAdapter(ArrayList<String> url, Context context){
+        this.mUrl = url;
         this.context = context;
     }
 
@@ -33,16 +36,25 @@ public class PhotoListAdapter extends  RecyclerView.Adapter<PhotoListAdapter.Pho
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder photoViewHolder, int i) {
-        Photolist mPhoto = PhotoList.get(i);
 
-        photoViewHolder.mPhoto.setImageResource(mPhoto.getmPhoto());
-        photoViewHolder.mPhotoName.setText(mPhoto.getmPhotoName());
-        photoViewHolder.mPhotoPlace.setText(mPhoto.getmPhotoPlace());
+        Picasso.get().load(mUrl.get(i)).fit().into(photoViewHolder.mPhoto);
+
+
+        photoViewHolder.mPhotoName.setText("Name");
+        photoViewHolder.mPhotoPlace.setText("Place");
     }
 
     @Override
     public int getItemCount() {
-        return PhotoList.size();
+        return mUrl.size();
+    }
+
+    public void addUrl(String url){
+        mUrl.add(url);
+    }
+
+    public void addAllUrl(List<String> urls){
+        mUrl.addAll(urls);
     }
 
     public class PhotoViewHolder extends RecyclerView.ViewHolder{
