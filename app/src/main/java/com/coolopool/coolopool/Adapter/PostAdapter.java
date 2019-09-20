@@ -70,7 +70,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         viewHolder.title.setText(current_post.getBlog().getTitle());
         FirebaseFirestore mRef = FirebaseFirestore.getInstance();
-        mRef.collection("users/").document(FirebaseAuth.getInstance().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        mRef.collection("users/").document(current_post.getBlog().getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 viewHolder.userName.setText(documentSnapshot.getString("name"));
@@ -81,7 +81,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         viewHolder.profileSection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewHolder.openCurrentProfile(mContext, current_post.getId());
+                viewHolder.openCurrentProfile(mContext, current_post.getId(), current_post.getBlog().getId());
             }
         });
 
@@ -146,9 +146,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             mContext.startActivity(postIntent);
         }
 
-        public void openCurrentProfile(Context context, String postId){
+        public void openCurrentProfile(Context context, String postId, String userId){
             Intent profileIntent = new Intent(context, ProfileActivity.class);
             profileIntent.putExtra("BLOG_ID", postId);
+            profileIntent.putExtra("USER_ID", userId);
             context.startActivity(profileIntent);
         }
 

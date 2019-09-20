@@ -172,7 +172,7 @@
                             android:background="@color/transparent_blur_side_menu"/>
 
                         <TextView
-                            android:id="@+id/editProfileButton"
+                            android:id="@+id/followProfileButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
