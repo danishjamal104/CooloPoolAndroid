@@ -216,7 +216,7 @@
                         android:orientation="vertical"
                         android:background="@color/white">
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/Trip_RecyclerView"
+                            android:id="@+id/trip_RecyclerView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
@@ -259,7 +259,7 @@
                         android:orientation="vertical"
                         android:background="@color/white">
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/Photo_RecyclerView"
+                            android:id="@+id/photo_RecyclerView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
