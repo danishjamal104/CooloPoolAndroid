@@ -50,6 +50,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     ArrayList<Post> posts;
     Context mContext;
 
+    public String profileImageUrl;
+
     public PostAdapter(ArrayList<Post> postArrayList, Context context){
         posts = postArrayList;
         this.mContext = context;
@@ -76,7 +78,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 viewHolder.userName.setText(documentSnapshot.getString("name"));
             }
         });
-        viewHolder.setUpNestedStackView(mContext, current_post);
+        viewHolder.setUpNestedStackView(mContext, current_post, profileImageUrl);
 
         viewHolder.profileSection.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +90,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         viewHolder.v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewHolder.openCurrentPost(mContext);
+                viewHolder.openCurrentPost(mContext, current_post, profileImageUrl);
             }
         });
 
@@ -99,7 +101,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             public void onComplete(@NonNull Task<Uri> task) {
                 Uri uri = task.getResult();
                 Picasso.get().load(uri).fit().into(viewHolder.profilePic);
-                Log.d(">>>>>>>>>>>>>>> ", "profile image: "+uri.toString());
+                profileImageUrl = uri.toString();
             }
         });
 
@@ -141,8 +143,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             profilePic = itemView.findViewById(R.id.profileImage);
         }
 
-        public void openCurrentPost(Context mContext){
+        public void openCurrentPost(Context mContext, Post post, String imageUrl){
             Intent postIntent = new Intent(mContext, PostActivity.class);
+            postIntent.putExtra("BLOG_ID", post.getId());
+            postIntent.putExtra("USER_ID", post.getBlog().getId());
+            postIntent.putExtra("BLOG", post.getBlog());
+            postIntent.putExtra("IMAGE", imageUrl);
             mContext.startActivity(postIntent);
         }
 
@@ -153,7 +159,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             context.startActivity(profileIntent);
         }
 
-        public void setUpNestedStackView(final Context context, final Post post){
+        public void setUpNestedStackView(final Context context, final Post post, final String imageUrl){
             CardStackListener listener = new CardStackListener() {
                 @Override
                 public void onCardDragging(Direction direction, float ratio) {
@@ -202,7 +208,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             stackView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    openCurrentPost(context);
+                    openCurrentPost(context, post, imageUrl);
                 }
             });
 

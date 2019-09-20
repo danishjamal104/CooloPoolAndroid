@@ -1,22 +1,23 @@
 package com.coolopool.coolopool.Backend.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Blog {
+public class Blog implements Serializable {
 
     String id;
     String title;
     String description;
     String date;
-    int Views;
+    ArrayList<String> Views;
     int likes;
     int experienced;
 
     public Blog() {
     }
 
-    public Blog(String id, String title, String description, String date, int views, int likes, int experienced) {
+    public Blog(String id, String title, String description, String date, ArrayList<String> views, int likes, int experienced) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -50,11 +51,11 @@ public class Blog {
         this.date = date;
     }
 
-    public int getViews() {
+    public ArrayList<String> getViews() {
         return Views;
     }
 
-    public void setViews(int views) {
+    public void setViews(ArrayList<String> views) {
         Views = views;
     }
 

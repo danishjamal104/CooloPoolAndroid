@@ -143,7 +143,6 @@ public class ProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         blogId = intent.getStringExtra("BLOG_ID");
         userId = intent.getStringExtra("USER_ID");
-        Toast.makeText(ProfileActivity.this, blogId, Toast.LENGTH_SHORT).show();
     }
 
     private void setUpTrips(){

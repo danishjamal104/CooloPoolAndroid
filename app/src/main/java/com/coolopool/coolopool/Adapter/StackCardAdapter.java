@@ -15,9 +15,10 @@ import com.coolopool.coolopool.Activity.PostActivity;
 import com.coolopool.coolopool.R;
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class StackCardAdapter extends RecyclerView.Adapter<StackCardAdapter.StackCardViewHolder> {
+public class StackCardAdapter extends RecyclerView.Adapter<StackCardAdapter.StackCardViewHolder> implements Serializable {
 
     ArrayList<String> imageUrl;
     ArrayList<String> description;

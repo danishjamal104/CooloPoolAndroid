@@ -3,6 +3,8 @@ package com.coolopool.coolopool.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -13,22 +15,49 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.coolopool.coolopool.Adapter.ImageAdapter;
 import com.coolopool.coolopool.Adapter.NewDayAdapter;
+import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Class.NewDay;
+import com.coolopool.coolopool.Class.Post;
 import com.coolopool.coolopool.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class PostActivity extends AppCompatActivity {
+
+    String blogId;
+    String userId;
+    String imageUrl;
+    Blog blog;
+
+    FirebaseFirestore mRef;
+    FirebaseAuth mAuth;
+
+    ImageView shareButton, profileImage;
+    TextView userName, description, views, likes, experienced;
+
+    RecyclerView daysRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        ImageView shareButton = findViewById(R.id.shareButton);
+        init();
+
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,6 +74,11 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
+
+
+    }
+
+    private void setUpRecyclerView(){
         ArrayList<Integer> id = new ArrayList<>();
 
         id.add(R.drawable.photo2);
@@ -79,19 +113,68 @@ public class PostActivity extends AppCompatActivity {
 
         NewDayAdapter newDayAdapter = new NewDayAdapter(days, this, 1);
 
+        daysRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        daysRecyclerView.setHasFixedSize(false);
+
+        daysRecyclerView.setAdapter(newDayAdapter);
+    }
 
 
+    private void init(){
+        getIntentData();
+        mAuth = FirebaseAuth.getInstance();
+        mRef = FirebaseFirestore.getInstance();
+        shareButton = findViewById(R.id.shareButton);
+        profileImage = findViewById(R.id.post_activity_profileImage);
+        description = findViewById(R.id.post_activity_description_textView);
+        userName = findViewById(R.id.post_activity_userName_textView);
+        views = findViewById(R.id.post_activity_views_count_textView);
+        likes = findViewById(R.id.post_activity_starts_count_textView);
+        experienced = findViewById(R.id.post_activity_followers_count_textView);
+        daysRecyclerView = findViewById(R.id.post_activity_days_recyclerView);
+        updateViews();
+        displayBlog();
+        setUpRecyclerView();
+    }
 
+    private void displayBlog(){
+        Picasso.get().load(imageUrl).fit().into(profileImage);
+        mRef.collection("users").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                userName.setText(documentSnapshot.getString("name"));
+                experienced.setText(""+((ArrayList<String>) documentSnapshot.get("followers")).size());
+            }
+        });
+        description.setText(blog.getDescription());
+        views.setText(""+blog.getViews().size());
+        likes.setText(""+blog.getLikes());
 
-        RecyclerView recyclerView = findViewById(R.id.post_activity_days_recyclerView);
-        ImageAdapter adapter = new ImageAdapter(id, this);
+    }
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(false);
+    private void updateViews(){
+        mRef.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference docRef = mRef.collection("blogs").document(blogId);
+                DocumentSnapshot data = transaction.get(docRef);
+                transaction.update(docRef, "views", FieldValue.arrayUnion(userId));
+                return null;
+            }
+        });
+    }
 
-        recyclerView.setAdapter(newDayAdapter);
+    private void getIntentData(){
+        Intent intent = getIntent();
+        blogId = intent.getStringExtra("BLOG_ID");
+        userId = intent.getStringExtra("USER_ID");
+        blog = (Blog) intent.getSerializableExtra("BLOG");
+        imageUrl = intent.getStringExtra("IMAGE");
+        Toast.makeText(PostActivity.this, blog.getId(), Toast.LENGTH_SHORT).show();
+    }
 
-
+    private void getBlog(){
 
     }
 

@@ -7,9 +7,10 @@ import com.coolopool.coolopool.Adapter.StackCardAdapter;
 import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Backend.Model.Day;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Post {
+public class Post implements Serializable {
 
     ArrayList<Day> days;
     Blog blog;
