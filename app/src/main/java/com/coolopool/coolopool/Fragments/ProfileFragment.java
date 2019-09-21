@@ -197,7 +197,6 @@ public class ProfileFragment extends Fragment {
                     public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                         if(snapshot != null && snapshot.exists()){
                             User userData = snapshot.toObject(User.class);
-                            Log.d("::::::::::: ", "onEvent: "+userData.getNoOfPhotos());
                             noOfPhotos.setText(""+userData.getNoOfPhotos());
                             noOfFollowers.setText(""+userData.getNoOfFollowers());
                             noOfTrips.setText(""+userData.getNoOfTrips());

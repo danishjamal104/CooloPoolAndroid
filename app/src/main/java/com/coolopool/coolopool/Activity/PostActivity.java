@@ -15,19 +15,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coolopool.coolopool.Adapter.ImageAdapter;
 import com.coolopool.coolopool.Adapter.NewDayAdapter;
 import com.coolopool.coolopool.Backend.Model.Blog;
+import com.coolopool.coolopool.Backend.Model.Day;
 import com.coolopool.coolopool.Class.NewDay;
 import com.coolopool.coolopool.Class.Post;
 import com.coolopool.coolopool.R;
+import com.coolopool.coolopool.Wrapper.DaysWrapper;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -42,12 +46,14 @@ public class PostActivity extends AppCompatActivity {
     String userId;
     String imageUrl;
     Blog blog;
+    ArrayList<Day> days;
 
     FirebaseFirestore mRef;
     FirebaseAuth mAuth;
 
     ImageView shareButton, profileImage;
     TextView userName, description, views, likes, experienced;
+    LinearLayout likeLayout;
 
     RecyclerView daysRecyclerView;
 
@@ -65,6 +71,15 @@ public class PostActivity extends AppCompatActivity {
                 startActivity(createShareIntent());
             }
         });
+
+        likeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                like();
+            }
+        });
+
+
 
         final ImageView back = findViewById(R.id.post_activity_back_button);
         back.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +147,7 @@ public class PostActivity extends AppCompatActivity {
         likes = findViewById(R.id.post_activity_starts_count_textView);
         experienced = findViewById(R.id.post_activity_followers_count_textView);
         daysRecyclerView = findViewById(R.id.post_activity_days_recyclerView);
+        likeLayout = findViewById(R.id.like_linearLayout);
         updateViews();
         displayBlog();
         setUpRecyclerView();
@@ -148,7 +164,8 @@ public class PostActivity extends AppCompatActivity {
         });
         description.setText(blog.getDescription());
         views.setText(""+blog.getViews().size());
-        likes.setText(""+blog.getLikes());
+        likes.setText(""+blog.getLikes().size());
+        setLiveData();
 
     }
 
@@ -158,9 +175,56 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                 DocumentReference docRef = mRef.collection("blogs").document(blogId);
-                DocumentSnapshot data = transaction.get(docRef);
-                transaction.update(docRef, "views", FieldValue.arrayUnion(userId));
+                transaction.update(docRef, "views", FieldValue.arrayUnion(mAuth.getUid()));
                 return null;
+            }
+        });
+    }
+
+    private void like(){
+        mRef.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference docRef = mRef.collection("blogs").document(blogId);
+                transaction.update(docRef, "likes", FieldValue.arrayUnion(mAuth.getUid()));
+                return null;
+            }
+        });
+    }
+
+    private void setLiveData(){
+        getLiveLikes();
+        getLiveViews();
+        getLiveTrips();
+    }
+
+    private void getLiveViews(){
+        mRef.collection("blogs").document(blogId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                ArrayList<String> viewers = (ArrayList<String>) documentSnapshot.get("views");
+                views.setText(""+viewers.size());
+            }
+        });
+    }
+
+    private void getLiveLikes(){
+        mRef.collection("blogs").document(blogId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                ArrayList<String> likers = (ArrayList<String>) documentSnapshot.get("likes");
+                likes.setText(""+likers.size());
+            }
+        });
+    }
+
+    private void getLiveTrips(){
+        mRef.collection("users").document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                int tripsCount = documentSnapshot.getDouble("noOfTrips").intValue();
+                experienced.setText(""+tripsCount);
             }
         });
     }
@@ -171,7 +235,6 @@ public class PostActivity extends AppCompatActivity {
         userId = intent.getStringExtra("USER_ID");
         blog = (Blog) intent.getSerializableExtra("BLOG");
         imageUrl = intent.getStringExtra("IMAGE");
-        Toast.makeText(PostActivity.this, blog.getId(), Toast.LENGTH_SHORT).show();
     }
 
     private void getBlog(){

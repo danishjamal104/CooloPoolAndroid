@@ -11,20 +11,18 @@ public class Blog implements Serializable {
     String description;
     String date;
     ArrayList<String> Views;
-    int likes;
-    int experienced;
+    ArrayList<String> likes;
 
     public Blog() {
     }
 
-    public Blog(String id, String title, String description, String date, ArrayList<String> views, int likes, int experienced) {
+    public Blog(String id, String title, String description, String date, ArrayList<String> views, ArrayList<String> likes) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.date = date;
         Views = views;
         this.likes = likes;
-        this.experienced = experienced;
     }
 
     public String getTitle() {
@@ -59,21 +57,14 @@ public class Blog implements Serializable {
         Views = views;
     }
 
-    public int getLikes() {
+    public ArrayList<String> getLikes() {
         return likes;
     }
 
-    public void setLikes(int likes) {
+    public void setLikes(ArrayList<String> likes) {
         this.likes = likes;
     }
 
-    public int getExperienced() {
-        return experienced;
-    }
-
-    public void setExperienced(int experienced) {
-        this.experienced = experienced;
-    }
 
     public String getId() {
         return id;

@@ -273,7 +273,7 @@ public class PostDraftActivity extends AppCompatActivity {
 
             }
         });
-        blogUploadingTask.execute(new Blog(mAuth.getUid(), tripTitle, tripDescription, tripDate, new ArrayList<String>(), 0, 0));
+        blogUploadingTask.execute(new Blog(mAuth.getUid(), tripTitle, tripDescription, tripDate, new ArrayList<String>(), new ArrayList<String>()));
     }
 
 

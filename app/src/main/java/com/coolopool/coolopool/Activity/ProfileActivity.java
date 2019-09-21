@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
@@ -33,6 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
@@ -113,14 +115,44 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void unFollow(){
-        mRef.collection("users").document(userId).update("followers", FieldValue.arrayRemove(mAuth.getUid()));
+        mRef.collection("users").document(userId).update("followers", FieldValue.arrayRemove(mAuth.getUid())).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                mRef.runTransaction(new Transaction.Function<Void>() {
+                    @androidx.annotation.Nullable
+                    @Override
+                    public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                        DocumentReference docRef = mRef.collection("users").document(userId);
+                        DocumentSnapshot data = transaction.get(docRef);
+                        Integer updateNoOfFollowers = data.getLong("noOfFollowers").intValue() - 1;
+                        transaction.update(docRef, "noOfFollowers", updateNoOfFollowers);
+                        return null;
+                    }
+                });
+            }
+        });
     }
 
     private void follow(){
         if(userId.equals(mAuth.getUid())){
             return;
         }
-        mRef.collection("users").document(userId).update("followers", FieldValue.arrayUnion(mAuth.getUid()));
+        mRef.collection("users").document(userId).update("followers", FieldValue.arrayUnion(mAuth.getUid())).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                mRef.runTransaction(new Transaction.Function<Void>() {
+                    @androidx.annotation.Nullable
+                    @Override
+                    public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                        DocumentReference docRef = mRef.collection("users").document(userId);
+                        DocumentSnapshot data = transaction.get(docRef);
+                        Integer updateNoOfFollowers = data.getLong("noOfFollowers").intValue() + 1;
+                        transaction.update(docRef, "noOfFollowers", updateNoOfFollowers);
+                        return null;
+                    }
+                });
+            }
+        });
     }
 
     private void init(){
