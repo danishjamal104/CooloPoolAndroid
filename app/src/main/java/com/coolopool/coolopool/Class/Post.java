@@ -26,7 +26,7 @@ public class Post implements Serializable {
         setUpAdapter();
     }
 
-    private void setUpAdapter(){
+    public void setUpAdapter(){
         ArrayList<String> imageUrl = new ArrayList<>();
         ArrayList<String> imageDesc = new ArrayList<>();
         for(int i=0; i<days.size(); i++){

@@ -103,6 +103,8 @@ public class HomeFragment extends Fragment {
 
         FirebaseFirestore mRef = FirebaseFirestore.getInstance();
 
+        int flag = 0;
+
         TaskCompleteListener<String> mCallback;
         Exception mException;
 
@@ -112,7 +114,7 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected ArrayList<Post> doInBackground(Void... voids) {
-
+            flag = 0;
             /*
 
             mRef.collection("blogs").orderBy("timestamp", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -153,33 +155,39 @@ public class HomeFragment extends Fragment {
                     if(task.isSuccessful()){
 
                         for(final QueryDocumentSnapshot document: task.getResult()){
-
                             document.getReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     final Blog currentBlog = documentSnapshot.toObject(Blog.class);
                                     final Post currentPost = new Post(new ArrayList<Day>(), currentBlog, getActivity());
                                     currentPost.setId(document.getId());
-                                    //posts.add(currentPost);
 
 
-                                    document.getReference().collection("days").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    document.getReference().collection("days").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                         @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
                                             ArrayList<Day> days = new ArrayList<>();
-                                            for(final QueryDocumentSnapshot daysDoc: task.getResult()){
-                                                Day currentDay = daysDoc.toObject(Day.class);
+
+                                            for(DocumentSnapshot document: documents){
+                                                Day currentDay = document.toObject(Day.class);
                                                 days.add(currentDay);
+                                                Log.d("///////// ", "onSuccess: "+currentDay.gettitle());
+                                                currentPost.getAdapter().addImage(currentDay.getImages().get(0));
+                                                currentPost.getAdapter().addDesc(currentDay.getdescription());
                                             }
+
                                             currentPost.addAllDays(days);
                                             currentPost.getAdapter().notifyDataSetChanged();
                                         }
                                     });
+                                    
+
                                     postAdapter.addPost(currentPost);
                                     postAdapter.notifyDataSetChanged();
-
                                 }
                             });
+                            flag++;
 
                         }
                     }

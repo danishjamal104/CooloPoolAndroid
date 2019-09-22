@@ -296,20 +296,16 @@ public class PostDraftActivity extends AppCompatActivity {
         protected Void doInBackground(String... strings) {
             blogId = strings[0];
             final ArrayList<NewDay> newDays = adapter.getNewDays();
-            ArrayList<String> descriptio = getDescriptionOfEachDay();
+            ArrayList<String> description = getDescriptionOfEachDay();
             Log.d(">>>>>>>>>>>>>>>>> ", "doInBackground: size: " + newDays.get(0).getmImageUri().size());
             for(int i=0; i<newDays.size(); i++){
                 if(newDays.get(i).getmImageUri().size() > 0){
                     FirebaseFirestore mRef = FirebaseFirestore.getInstance();
-                    Day d = new Day(""+i, "TITLE", descriptio.get(i), new ArrayList<String>());
+                    Day d = new Day(""+i, "TITLE", description.get(i), new ArrayList<String>());
                     final int finalI = i;
                     mRef.collection("blogs").document(blogId)
-                            .collection("days").document("day"+i).set(d).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            storePicsOfSingleDay(getUriOfSingleDay(newDays.get(finalI)), finalI);
-                        }
-                    });
+                            .collection("days").document("day"+i).set(d);
+                    storePicsOfSingleDay(newDays.get(i).getmImageUri(), finalI);
 
                 }
 
@@ -355,22 +351,14 @@ public class PostDraftActivity extends AppCompatActivity {
 
         }
 
-        private ArrayList<Uri> getUriOfSingleDay(NewDay newDay){
-            ArrayList<Uri> uris = new ArrayList<>();
-            for(int i=0; i<newDay.getmImageUri().size(); i++){
-                uris.add(newDay.getmImageUri().get(i));
-            }
-            return uris;
-        }
-
         private void storePicsOfSingleDay(ArrayList<Uri> uris, final int dayCounter){
             //Todo: create a day array and upload pics of all day in a nested loop
             StorageReference mRef = FirebaseStorage.getInstance().getReference()
                     .child("blogs/"+mAuth.getUid())
-                    .child("blog"+noOfBlogs).child("day"+dayCounter);
+                    .child("blog"+noOfBlogs).child(""+dayCounter);
             for(int k=0; k<uris.size(); k++){
                 if(uris.get(k) != null){
-                    final StorageReference currentRef = mRef.child("pic"+k);
+                    final StorageReference currentRef = mRef.child(""+k);
                     Task t = currentRef.putFile(uris.get(k));
                     t.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override

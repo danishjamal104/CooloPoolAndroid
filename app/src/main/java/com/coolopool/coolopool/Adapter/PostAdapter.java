@@ -177,6 +177,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 @Override
                 public void onCardDisappeared(View view, int position) {
                     if(position+1 == stackView.getAdapter().getItemCount()){
+                        post.setUpAdapter();
                        stackView.setAdapter(post.getAdapter());
                        stackView.getAdapter().notifyDataSetChanged();
                     }

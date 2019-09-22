@@ -58,6 +58,15 @@ public class StackCardAdapter extends RecyclerView.Adapter<StackCardAdapter.Stac
         return description.get(position);
     }
 
+    public void addImage(String image){
+        imageUrl.add(image);
+        notifyDataSetChanged();
+    }
+
+    public void addDesc(String desc){
+        description.add(desc);
+    }
+
     @Override
     public int getItemCount() {
         return imageUrl.size();
