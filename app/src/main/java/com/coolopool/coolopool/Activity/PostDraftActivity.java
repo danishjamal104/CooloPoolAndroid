@@ -295,16 +295,22 @@ public class PostDraftActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... strings) {
             blogId = strings[0];
-            ArrayList<NewDay> newDays = adapter.getNewDays();
+            final ArrayList<NewDay> newDays = adapter.getNewDays();
             ArrayList<String> descriptio = getDescriptionOfEachDay();
             Log.d(">>>>>>>>>>>>>>>>> ", "doInBackground: size: " + newDays.get(0).getmImageUri().size());
             for(int i=0; i<newDays.size(); i++){
                 if(newDays.get(i).getmImageUri().size() > 0){
                     FirebaseFirestore mRef = FirebaseFirestore.getInstance();
                     Day d = new Day(""+i, "TITLE", descriptio.get(i), new ArrayList<String>());
+                    final int finalI = i;
                     mRef.collection("blogs").document(blogId)
-                            .collection("days").document("day"+i).set(d);
-                    storePicsOfSingleDay(getUriOfSingleDay(newDays.get(i)), i);
+                            .collection("days").document("day"+i).set(d).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            storePicsOfSingleDay(getUriOfSingleDay(newDays.get(finalI)), finalI);
+                        }
+                    });
+
                 }
 
             }

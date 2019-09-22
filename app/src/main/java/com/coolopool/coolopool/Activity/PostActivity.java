@@ -2,31 +2,22 @@ package com.coolopool.coolopool.Activity;
 
 import android.content.Intent;
 import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
 import androidx.appcompat.widget.ShareActionProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.coolopool.coolopool.Adapter.ImageAdapter;
 import com.coolopool.coolopool.Adapter.NewDayAdapter;
 import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Backend.Model.Day;
 import com.coolopool.coolopool.Class.NewDay;
-import com.coolopool.coolopool.Class.Post;
 import com.coolopool.coolopool.R;
-import com.coolopool.coolopool.Wrapper.DaysWrapper;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -35,10 +26,12 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PostActivity extends AppCompatActivity {
 
@@ -56,11 +49,13 @@ public class PostActivity extends AppCompatActivity {
     LinearLayout likeLayout;
 
     RecyclerView daysRecyclerView;
+    NewDayAdapter newDayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
+        NewDay.COUNT = 1;
 
         init();
 
@@ -94,16 +89,6 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerView(){
-        ArrayList<Integer> id = new ArrayList<>();
-
-        id.add(R.drawable.photo2);
-        id.add(R.drawable.photo4);
-        id.add(R.drawable.photo1);
-        id.add(R.drawable.photo5);
-        id.add(R.drawable.photo3);
-        id.add(R.drawable.photo1);
-        id.add(R.drawable.photo2);
-        id.add(R.drawable.photo3);
 
         ArrayList<Uri> images = new ArrayList<>();
         images.add(Uri.parse("http://i.dailymail.co.uk/i/pix/2015/09/01/18/2BE1E88B00000578-3218613-image-m-5_1441127035222.jpg"));
@@ -113,20 +98,7 @@ public class PostActivity extends AppCompatActivity {
         images.add(Uri.parse("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcy6Jw27D75372TBFKumrXhCIV6TA3ckCMJocWwng-V-eNdKkjwg"));
 
 
-
-
-        ArrayList<NewDay> days = new ArrayList<>();
-        NewDay.COUNT = 1;
-        days.add(new NewDay("Demo description: 1", PostActivity.this, images));
-        days.add(new NewDay("Demo description: 2", PostActivity.this));
-        days.add(new NewDay("Demo description: 3", PostActivity.this, images));
-        days.add(new NewDay("Demo description: 4", PostActivity.this));
-        days.add(new NewDay("Demo description: 5", PostActivity.this, images));
-
-
-
-
-        NewDayAdapter newDayAdapter = new NewDayAdapter(days, this, 1);
+        newDayAdapter = new NewDayAdapter(new ArrayList<NewDay>(), this, 1);
 
         daysRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         daysRecyclerView.setHasFixedSize(false);
@@ -166,7 +138,7 @@ public class PostActivity extends AppCompatActivity {
         views.setText(""+blog.getViews().size());
         likes.setText(""+blog.getLikes().size());
         setLiveData();
-
+        getBlog();
     }
 
     private void updateViews(){
@@ -238,7 +210,22 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void getBlog(){
-
+        mRef.collection("blogs").document(blogId).collection("days").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                for(DocumentSnapshot document: documents){
+                    Day currentDay = document.toObject(Day.class);
+                    ArrayList<Uri> images = new ArrayList<>();
+                    for(String url: currentDay.getImages()){
+                        images.add(Uri.parse(url));
+                    }
+                    NewDay currentNewDay = new NewDay(currentDay.getdescription(), PostActivity.this, images);
+                    newDayAdapter.addDays(currentNewDay);
+                    newDayAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
 
