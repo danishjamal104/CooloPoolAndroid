@@ -1,5 +1,8 @@
 package com.coolopool.coolopool.Backend.Model;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
@@ -73,4 +76,5 @@ public class Blog implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
 }

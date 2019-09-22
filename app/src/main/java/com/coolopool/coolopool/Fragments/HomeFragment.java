@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +26,16 @@ import com.coolopool.coolopool.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 
 /**
@@ -104,10 +112,42 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected ArrayList<Post> doInBackground(Void... voids) {
-            final ArrayList<Post> posts = new ArrayList<>();
+
+            /*
+
+            mRef.collection("blogs").orderBy("timestamp", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                    for(DocumentSnapshot document: documents){
+                        final Blog currentBlog = document.toObject(Blog.class);
+                        final Post currentPost = new Post(new ArrayList<Day>(), currentBlog, getActivity());
+                        currentPost.setId(document.getId());
+
+                        document.getReference().collection("days").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                ArrayList<Day> days = new ArrayList<>();
+                                for(final QueryDocumentSnapshot daysDoc: task.getResult()){
+                                    Day currentDay = daysDoc.toObject(Day.class);
+                                    days.add(currentDay);
+                                }
+                                currentPost.addAllDays(days);
+                                currentPost.getAdapter().notifyDataSetChanged();
+                            }
+                        });
+                        if(!postAdapter.getPosts().contains(currentPost)){
+                            postAdapter.addPost(currentPost);
+                            postAdapter.notifyDataSetChanged();
+                        }
+
+                    }
+                }
+            });
+*/
 
 
-            mRef.collection("blogs").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            mRef.collection("blogs").orderBy("timestamp", Query.Direction.ASCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
@@ -145,6 +185,10 @@ public class HomeFragment extends Fragment {
                     }
                 }
             });
+
+
+
+
 
             return null;
         }

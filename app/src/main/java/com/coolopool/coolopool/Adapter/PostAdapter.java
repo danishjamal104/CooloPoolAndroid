@@ -108,6 +108,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         notifyDataSetChanged();
     }
 
+    public ArrayList<Post> getPosts() {
+        return posts;
+    }
+
     public static class PostViewHolder extends RecyclerView.ViewHolder{
 
         TextView title;

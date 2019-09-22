@@ -416,6 +416,7 @@ public class PostDraftActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {
                     id = documentReference.getId();
+                    documentReference.update("timestamp", FieldValue.serverTimestamp());
                     mCallback.onSuccess(id);
                 }
             });
