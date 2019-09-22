@@ -172,7 +172,6 @@ public class HomeFragment extends Fragment {
                                             for(DocumentSnapshot document: documents){
                                                 Day currentDay = document.toObject(Day.class);
                                                 days.add(currentDay);
-                                                Log.d("///////// ", "onSuccess: "+currentDay.gettitle());
                                                 currentPost.getAdapter().addImage(currentDay.getImages().get(0));
                                                 currentPost.getAdapter().addDesc(currentDay.getdescription());
                                             }
@@ -181,7 +180,7 @@ public class HomeFragment extends Fragment {
                                             currentPost.getAdapter().notifyDataSetChanged();
                                         }
                                     });
-                                    
+
 
                                     postAdapter.addPost(currentPost);
                                     postAdapter.notifyDataSetChanged();

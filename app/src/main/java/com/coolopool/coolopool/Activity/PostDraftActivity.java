@@ -302,10 +302,11 @@ public class PostDraftActivity extends AppCompatActivity {
                 if(newDays.get(i).getmImageUri().size() > 0){
                     FirebaseFirestore mRef = FirebaseFirestore.getInstance();
                     Day d = new Day(""+i, "TITLE", description.get(i), new ArrayList<String>());
-                    final int finalI = i;
                     mRef.collection("blogs").document(blogId)
                             .collection("days").document("day"+i).set(d);
-                    storePicsOfSingleDay(newDays.get(i).getmImageUri(), finalI);
+                    Log.d("---------------- ", "doInBackground: storing pic of day "+i);
+                    storePicsOfSingleDay(newDays.get(i).getmImageUri(), i);
+                    Log.d("---------------- ", "doInBackground: storing pic of day "+i+" completed");
 
                 }
 
