@@ -11,7 +11,6 @@ public class User {
     String phoneNumber;
     int  noOfTrips;
     int noOfPhotos;
-    int  noOfFollowers;
     String uid;
     ArrayList<String> followers;
 
@@ -24,13 +23,12 @@ public class User {
         this.name = name;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.noOfFollowers = 0;
         this.noOfPhotos = 0;
         this.noOfTrips = 0;
         this.followers = new ArrayList<>();
     }
 
-    public User(String email, String username, String name, String password, String phoneNumber, int noOfTrips, int noOfPhotos, int noOfFollowers) {
+    public User(String email, String username, String name, String password, String phoneNumber, int noOfTrips, int noOfPhotos) {
         this.email = email;
         this.username = username;
         this.name = name;
@@ -38,7 +36,6 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.noOfTrips = noOfTrips;
         this.noOfPhotos = noOfPhotos;
-        this.noOfFollowers = noOfFollowers;
         this.followers = new ArrayList<>();
     }
 
@@ -98,13 +95,6 @@ public class User {
         this.noOfPhotos = noOfPhotos;
     }
 
-    public int getNoOfFollowers() {
-        return noOfFollowers;
-    }
-
-    public void setNoOfFollowers(int noOfFollowers) {
-        this.noOfFollowers = noOfFollowers;
-    }
 
     public String getUid() {
         return uid;

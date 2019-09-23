@@ -211,7 +211,7 @@ public class ProfileActivity extends AppCompatActivity {
                     User userData = snapshot.toObject(User.class);
                     Log.d("::::::::::: ", "onEvent: "+userData.getNoOfPhotos());
                     pics.setText(""+userData.getNoOfPhotos());
-                    followers.setText(""+userData.getNoOfFollowers());
+                    followers.setText(""+userData.getFollowers().size());
                     trips.setText(""+userData.getNoOfTrips());
                 }
             }

@@ -301,7 +301,7 @@ public class PostDraftActivity extends AppCompatActivity {
             for(int i=0; i<newDays.size(); i++){
                 if(newDays.get(i).getmImageUri().size() > 0){
                     FirebaseFirestore mRef = FirebaseFirestore.getInstance();
-                    Day d = new Day(""+i, "TITLE", description.get(i), new ArrayList<String>());
+                    Day d = new Day(""+i, "TITLE", "<DEC>", new ArrayList<String>());
                     mRef.collection("blogs").document(blogId)
                             .collection("days").document("day"+i).set(d);
                     Log.d("---------------- ", "doInBackground: storing pic of day "+i);
@@ -314,11 +314,12 @@ public class PostDraftActivity extends AppCompatActivity {
             return null;
         }
 
+
         private ArrayList<String> getDescriptionOfEachDay(){
             ArrayList<String> result = new ArrayList<>();
             final int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
-            final int lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
-            for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; ++i) {
+            final int lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition()+1;
+            for (int i = firstVisibleItemPosition; i < lastVisibleItemPosition; i++) {
                 RecyclerView.ViewHolder holder = (RecyclerView.ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
                 String description = ((EditText)holder.itemView.findViewById(R.id.create_new_day_list_item_desc_editText)).getText().toString().trim();
                 result.add(description);

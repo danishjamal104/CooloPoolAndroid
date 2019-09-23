@@ -122,6 +122,10 @@ public class NewDayAdapter extends RecyclerView.Adapter<NewDayAdapter.NewDayView
             itemView.setOnClickListener(this);
         }
 
+        public String getDescription(){
+            return description.getText().toString();
+        }
+
         public void setItemClickListener(ItemClickListener itemClickListener) {
             this.itemClickListener = itemClickListener;
         }

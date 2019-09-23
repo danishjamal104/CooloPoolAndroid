@@ -69,6 +69,8 @@ public class ProfileFragment extends Fragment {
     CircleImageView mProfileImage;
 
     FirebaseAuth mAuth;
+    FirebaseFirestore mRef;
+    FirebaseStorage mStorage;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -79,6 +81,10 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        mAuth = FirebaseAuth.getInstance();
+        mRef = FirebaseFirestore.getInstance();
+        mStorage = FirebaseStorage.getInstance();
 
         v =  inflater.inflate(R.layout.fragment_profile, container, false);
 
@@ -114,15 +120,6 @@ public class ProfileFragment extends Fragment {
         setUpTrips();
 
         // this is for Photo List View
-
-        ArrayList<Photolist> photoList = new ArrayList<>();
-
-        photoList.add(new Photolist(R.drawable.photo4,"Room","USA"));
-        photoList.add(new Photolist(R.drawable.photo1,"Food","kathi junction"));
-        photoList.add(new Photolist(R.drawable.photo5,"Night Room","London"));
-        photoList.add(new Photolist(R.drawable.photo2,"Burger","burger king"));
-        photoList.add(new Photolist(R.drawable.photo4,"Room","USA"));
-        photoList.add(new Photolist(R.drawable.photo3,"BedRoom","OYO"));
 
         mPhotoList = v.findViewById(R.id.Photo_RecyclerView);
         setUpPhotos();
@@ -178,11 +175,8 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setUpBackEnd(){
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseStorage storageReference = FirebaseStorage.getInstance();
-        FirebaseFirestore mRef = FirebaseFirestore.getInstance();
 
-        storageReference.getReference("Users/profileImages/"+mAuth.getUid())
+        mStorage.getReference("Users/profileImages/"+mAuth.getUid())
                 .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
@@ -198,7 +192,7 @@ public class ProfileFragment extends Fragment {
                         if(snapshot != null && snapshot.exists()){
                             User userData = snapshot.toObject(User.class);
                             noOfPhotos.setText(""+userData.getNoOfPhotos());
-                            noOfFollowers.setText(""+userData.getNoOfFollowers());
+                            noOfFollowers.setText(""+userData.getFollowers().size());
                             noOfTrips.setText(""+userData.getNoOfTrips());
                         }
                     }
@@ -208,14 +202,13 @@ public class ProfileFragment extends Fragment {
 
     }
 
+
     public View getView() {
         return v;
     }
 
     public class FetchData extends AsyncTask<Void, Void, ArrayList<ArrayList<String>>>{
 
-        FirebaseFirestore mRef;
-        FirebaseStorage mStorage;
 
         ArrayList<ArrayList<String>> result = new ArrayList<>();
 
@@ -263,8 +256,6 @@ public class ProfileFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mRef = FirebaseFirestore.getInstance();
-            mStorage = FirebaseStorage.getInstance();
         }
 
         @Override

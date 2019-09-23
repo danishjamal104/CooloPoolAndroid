@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.coolopool.coolopool.Class.followList;
 import com.coolopool.coolopool.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class FollowersListAdapter extends RecyclerView.Adapter<FollowersListAdap
     public void onBindViewHolder(@NonNull FollowersViewHolder followersViewHolder, int i) {
         followList FollowersList = FollowList.get(i);
 
-        followersViewHolder.mUserProfilePic.setImageResource(FollowersList.getmUserProfilePic());
+        Picasso.get().load(FollowersList.getmUserProfilePic()).fit().into(followersViewHolder.mUserProfilePic);
         followersViewHolder.mUserName.setText(FollowersList.getmUserName());
         followersViewHolder.mUserFullName.setText(FollowersList.getmFullName());
     }
@@ -45,6 +46,19 @@ public class FollowersListAdapter extends RecyclerView.Adapter<FollowersListAdap
     @Override
     public int getItemCount() {
         return FollowList.size();
+    }
+
+    public void addFollowers(followList follower){
+        FollowList.add(follower);
+        notifyDataSetChanged();
+    }
+
+    public ArrayList<followList> getFollowList() {
+        return FollowList;
+    }
+
+    public void resetFollowers(){
+        FollowList = new ArrayList<>();
     }
 
     public class FollowersViewHolder extends RecyclerView.ViewHolder{
