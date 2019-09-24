@@ -4,13 +4,18 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.coolopool.coolopool.Activity.ProfileActivity;
+import com.coolopool.coolopool.Application.MyApplication;
 import com.coolopool.coolopool.Class.followList;
 import com.coolopool.coolopool.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -36,11 +41,22 @@ public class FollowersListAdapter extends RecyclerView.Adapter<FollowersListAdap
 
     @Override
     public void onBindViewHolder(@NonNull FollowersViewHolder followersViewHolder, int i) {
-        followList FollowersList = FollowList.get(i);
+        final followList FollowersList = FollowList.get(i);
 
         Picasso.get().load(FollowersList.getmUserProfilePic()).fit().into(followersViewHolder.mUserProfilePic);
         followersViewHolder.mUserName.setText(FollowersList.getmUserName());
         followersViewHolder.mUserFullName.setText(FollowersList.getmFullName());
+
+        followersViewHolder.v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent profileIntent = new Intent(context, ProfileActivity.class);
+                profileIntent.putExtra("USER_ID", FollowersList.getUserId());
+                context.startActivity(profileIntent);
+            }
+        });
+
+
     }
 
     @Override
@@ -65,9 +81,11 @@ public class FollowersListAdapter extends RecyclerView.Adapter<FollowersListAdap
 
         CircleImageView mUserProfilePic;
         TextView mUserName, mUserFullName;
+        View v;
 
         public FollowersViewHolder(@NonNull View itemView) {
             super(itemView);
+            v = itemView;
             mUserProfilePic = itemView.findViewById(R.id.userProfilePic);
             mUserName = itemView.findViewById(R.id.Username);
             mUserFullName = itemView.findViewById(R.id.Name);

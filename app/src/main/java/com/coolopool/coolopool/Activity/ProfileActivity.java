@@ -11,16 +11,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.coolopool.coolopool.Adapter.PhotoListAdapter;
 import com.coolopool.coolopool.Adapter.TripListAdapter;
-import com.coolopool.coolopool.Application.MyApplication;
 import com.coolopool.coolopool.Backend.Model.User;
 import com.coolopool.coolopool.Class.Triplist;
-import com.coolopool.coolopool.Fragments.ProfileFragment;
 import com.coolopool.coolopool.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,17 +32,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    String blogId;
     String userId;
 
     TextView followButton;
@@ -173,7 +164,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void getIntentData(){
         Intent intent = getIntent();
-        blogId = intent.getStringExtra("BLOG_ID");
         userId = intent.getStringExtra("USER_ID");
     }
 

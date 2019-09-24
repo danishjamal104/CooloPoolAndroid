@@ -5,12 +5,13 @@ import android.widget.Button;
 public class followList{
 
     private String mUserProfilePic;
-    private String mUserName, mFullName;
+    private String mUserName, mFullName, userId;
 
-    public  followList(String userProfilePic, String userName, String userFullName){
+    public  followList(String userProfilePic, String userName, String userFullName, String userId){
         mUserProfilePic = userProfilePic;
         mUserName = userName;
         mFullName = userFullName;
+        this.userId = userId;
     }
 
     public String getmUserProfilePic(){return mUserProfilePic;}
@@ -27,5 +28,13 @@ public class followList{
 
     public void setmFullName(String mFullName) {
         this.mFullName = mFullName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

@@ -88,7 +88,7 @@ public class FollowersActivity extends AppCompatActivity {
                                 public void onSuccess(Uri uri) {
 
 
-                                    followList followList = new followList(uri.toString(), currentUser.getName(), currentUser.getUsername());
+                                    followList followList = new followList(uri.toString(), currentUser.getName(), currentUser.getUsername(), currentUser.getUid());
                                     adapter.addFollowers(followList);
                                 }
                             });
