@@ -8,16 +8,25 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.coolopool.coolopool.Adapter.OffersAdapter;
+import com.coolopool.coolopool.Backend.Model.Coupon;
 import com.coolopool.coolopool.Class.Offer;
 import com.coolopool.coolopool.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GiftsActivity extends AppCompatActivity {
 
-    ArrayList<Offer> mOffers;
     OffersAdapter mAdapter;
     RecyclerView mRecyclerView;
+
+    FirebaseFirestore mRef;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +39,10 @@ public class GiftsActivity extends AppCompatActivity {
     }
 
     private void init(){
+        mAuth = FirebaseAuth.getInstance();
+        mRef = FirebaseFirestore.getInstance();
         mRecyclerView = (RecyclerView)findViewById(R.id.offers_recyclerView);
+        mAdapter = new OffersAdapter(new ArrayList<Offer>(), GiftsActivity.this);
     }
 
     private void setUpBackButton(){
@@ -44,24 +56,32 @@ public class GiftsActivity extends AppCompatActivity {
     }
 
     private void setUpOffers(){
-        mOffers = new ArrayList<>();
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 16));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 04));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 13));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 03));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 23));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 56));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 01));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 45));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 01));
-        mOffers.add(new Offer(R.drawable.cash_back, "Cashback won", "Flat 20% off*", 06));
 
-        mAdapter = new OffersAdapter(mOffers, GiftsActivity.this);
+        mAdapter.addOffer(new Offer("Cashback won", 20, 16));
+        mAdapter.addOffer(new Offer("Cashback won", 20, 04));
+        mAdapter.addOffer(new Offer("Cashback won", 16, 13));
+
+        mAdapter.notifyDataSetChanged();
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(GiftsActivity.this, 2));
         mRecyclerView.setHasFixedSize(false);
 
         mRecyclerView.setAdapter(mAdapter);
+        fetchCoupons();
 
+    }
+
+    private void fetchCoupons(){
+        mRef.collection("users").document(mAuth.getUid()).collection("coupons").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                        for(DocumentSnapshot document: documents){
+                            Coupon currentCoupan = document.toObject(Coupon.class);
+                            mAdapter.addOffer(new Offer("Cashback won", currentCoupan.getAmount(), currentCoupan.getExpiry(), currentCoupan.getCode()));
+                        }
+                    }
+                });
     }
 }

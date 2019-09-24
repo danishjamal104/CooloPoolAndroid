@@ -36,17 +36,16 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OfferViewH
 
     @Override
     public void onBindViewHolder(@NonNull OfferViewHolder holder, int position) {
-        Offer currentOffer = offers.get(position);
+        final Offer currentOffer = offers.get(position);
 
-        holder.mImageView.setImageResource(currentOffer.getmImageId());
         holder.mType.setText(currentOffer.getmType());
-        holder.mDescription.setText(currentOffer.getmDescription());
+        holder.mDescription.setText("Flat" + currentOffer.getmAmount() + "% off*");
         holder.mExpiry.setText("Expires in " + currentOffer.getmExpiry() + " days");
 
         holder.mGetCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "Getting code", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Code: "+currentOffer.getCode(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -54,6 +53,11 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OfferViewH
     @Override
     public int getItemCount() {
         return offers.size();
+    }
+
+    public void addOffer(Offer offer){
+        offers.add(offer);
+        notifyDataSetChanged();
     }
 
     public class OfferViewHolder extends RecyclerView.ViewHolder{
