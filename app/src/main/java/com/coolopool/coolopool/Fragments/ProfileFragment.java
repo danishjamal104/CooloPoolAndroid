@@ -131,6 +131,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 Log.d("Log_test", "followers activity is started");
                 Intent intent = new Intent(getActivity(), FollowersActivity.class);
+                intent.putExtra("FOLLOWERS", noOfFollowers.getText().toString());
                 startActivity(intent);
             }
         });

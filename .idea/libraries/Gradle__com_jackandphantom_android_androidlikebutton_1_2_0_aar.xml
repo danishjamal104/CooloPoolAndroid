@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.jackandphantom.android:androidlikebutton:1.2.0@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/011666448cf6c2a91079716cea41159b/jetified-androidlikebutton-1.2.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/011666448cf6c2a91079716cea41159b/jetified-androidlikebutton-1.2.0/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jackandphantom.android/androidlikebutton/1.2.0/7e6bf4b16fdd919a8d5ce306b335f034fd2b1c48/androidlikebutton-1.2.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jackandphantom.android/androidlikebutton/1.2.0/1e9c41bde35f57a294b994294abd1b021035c678/androidlikebutton-1.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

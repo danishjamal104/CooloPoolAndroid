@@ -59,6 +59,18 @@ public class FollowersListAdapter extends RecyclerView.Adapter<FollowersListAdap
 
     }
 
+    public void filterFollowers(String text){
+        ArrayList<followList> copy = FollowList;
+        FollowList = new ArrayList<>();
+        for(followList follower: copy){
+            if(follower.getmUserName().toLowerCase().contains(text.toLowerCase())){
+                FollowList.add(follower);
+                notifyDataSetChanged();
+            }
+        }
+
+    }
+
     @Override
     public int getItemCount() {
         return FollowList.size();

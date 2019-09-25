@@ -3,6 +3,8 @@ package com.coolopool.coolopool.Fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+
+import com.coolopool.coolopool.Application.MyApplication;
 import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Backend.Model.Day;
 import com.coolopool.coolopool.Class.Post;
@@ -209,6 +211,7 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Post> postArrayList) {
             super.onPostExecute(postArrayList);
+            mRef.setFirestoreSettings(MyApplication.getSettings());
             if(mCallback != null){
                 if(mException == null){
                     mCallback.onSuccess();
