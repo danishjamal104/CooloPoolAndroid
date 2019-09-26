@@ -116,8 +116,7 @@ public class FollowersActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User user = documentSnapshot.toObject(User.class);
-                String[] a = user.getUsername().split("@");
-                username.setText(a[0]);
+                username.setText(user.getUsername().split("@")[0]);
             }
         });
     }

@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.provider.DocumentsContract;
 import android.util.Log;
@@ -47,12 +48,15 @@ public class HomeFragment extends Fragment {
 
     RecyclerView recyclerView;
 
+    SwipeRefreshLayout postRefresh;
+
     PostAdapter postAdapter;
     View view;
 
     FirebaseAuth mAuth;
 
-    int flag;
+    FetchBlogTask fetchBlogTask;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -80,16 +84,15 @@ public class HomeFragment extends Fragment {
 
     private void init(){
         recyclerView = view.findViewById(R.id.recycler_view);
+        postRefresh = view.findViewById(R.id.post_refresh);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(false);
         recyclerView.setAdapter(postAdapter);
 
-    }
-
-    private void getBlogs() {
-        FetchBlogTask task = new FetchBlogTask(new TaskCompleteListener<String>() {
+        fetchBlogTask = new FetchBlogTask(new TaskCompleteListener<String>() {
             @Override
             public void onSuccess() {
+                postRefresh.setRefreshing(false);
                 Toast.makeText(getActivity(), "Post loaded", Toast.LENGTH_SHORT).show();
             }
 
@@ -98,7 +101,18 @@ public class HomeFragment extends Fragment {
 
             }
         });
-        task.execute();
+
+        postRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchBlogTask.execute();
+            }
+        });
+    }
+
+    private void getBlogs() {
+
+        fetchBlogTask.execute();
     }
 
     public class FetchBlogTask extends AsyncTask<Void, Void, ArrayList<Post>>{
