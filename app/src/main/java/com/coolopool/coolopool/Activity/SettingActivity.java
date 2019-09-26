@@ -7,16 +7,33 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.coolopool.coolopool.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingActivity extends AppCompatActivity {
 
     TextView mProfileButton, mPrivacyButton, mAboutButton, mLogoutButton;
+
+    FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
+        mAuth = FirebaseAuth.getInstance();
+
         mProfileButton = findViewById(R.id.profilebtn);
+        mLogoutButton = findViewById(R.id.logoutBtn);
+
+        mLogoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth.signOut();
+                startActivity(new Intent(SettingActivity.this, HomeActivity.class));
+                finish();
+            }
+        });
+
         mProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

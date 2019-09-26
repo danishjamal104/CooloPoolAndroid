@@ -105,6 +105,19 @@ public class HomeFragment extends Fragment {
         postRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                postAdapter.reset();
+                fetchBlogTask = new FetchBlogTask(new TaskCompleteListener<String>() {
+                    @Override
+                    public void onSuccess() {
+                        postRefresh.setRefreshing(false);
+                        Toast.makeText(getActivity(), "Post loaded", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+
+                    }
+                });
                 fetchBlogTask.execute();
             }
         });

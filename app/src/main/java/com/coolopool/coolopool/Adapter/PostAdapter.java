@@ -112,6 +112,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return posts;
     }
 
+    public void reset(){
+        posts = new ArrayList<>();
+    }
+
     public static class PostViewHolder extends RecyclerView.ViewHolder{
 
         TextView title;

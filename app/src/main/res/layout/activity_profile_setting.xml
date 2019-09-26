@@ -31,6 +31,7 @@
             android:textStyle="bold"/>
 
         <ImageButton
+            android:id="@+id/confirmBtn"
             android:layout_weight=".2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -56,7 +57,7 @@
             android:orientation="vertical">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profilepic"
+                android:id="@+id/setting_profilepic"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="10dp"
                 android:layout_width="120dp"
@@ -76,7 +77,7 @@
                 android:gravity="center"/>
 
             <EditText
-                android:id="@+id/Name"
+                android:id="@+id/setting_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Name"
@@ -93,7 +94,7 @@
                 />
 
             <EditText
-                android:id="@+id/phoneNo"
+                android:id="@+id/setting_phoneNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Phone number"
@@ -112,7 +113,7 @@
                 />
 
             <EditText
-                android:id="@+id/Url"
+                android:id="@+id/setting_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Email"
@@ -131,10 +132,10 @@
                 />
 
             <EditText
-            android:id="@+id/setting_username"
+            android:id="@+id/setting_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username"
+            android:hint="Password"
             android:textColor="@color/white"
             android:singleLine="false"
             android:inputType="textEmailAddress"
@@ -149,27 +150,22 @@
             android:layout_marginTop="10dp"
             />
 
-            <EditText
-                android:id="@+id/setting_password"
+            <ProgressBar
+                android:id="@+id/progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
-                android:textColor="@color/white"
-                android:singleLine="false"
-                android:inputType="text"
-                android:textColorHint="@color/white"
-                android:fontFamily="@font/glacial_indifference_regular"
-                android:textSize="20sp"
-                android:backgroundTint="@color/GrayGoose"
-                android:padding="16dp"
-                android:drawablePadding="16dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="10dp"
-                />
+                android:layout_gravity="center_horizontal"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:max="300"
+                android:progress="0"
+                android:padding="44dp"
+                android:visibility="gone"/>
+
 
         </LinearLayout>
 
     </ScrollView>
+
+
 
 </LinearLayout>

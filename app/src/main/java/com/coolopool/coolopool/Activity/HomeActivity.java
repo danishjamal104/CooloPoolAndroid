@@ -47,13 +47,9 @@ public class HomeActivity extends AppCompatActivity {
     ImageButton mSearchButton;
     EditText mSearchBar;
     ImageButton mHomeButton;
-    ImageButton mCartButton;
 
     ImageButton hotelButton;
     ImageButton restaurantsButton;
-
-    RadioButton topRadioButton;
-    RadioButton bottomRadioButton;
 
     ImageButton userButton;
 

@@ -242,7 +242,6 @@ public class ProfileFragment extends Fragment {
                                     tripAdapter.addTrip(new Triplist(blogPics.get(0),"Place", "2"));
                                     tripAdapter.notifyDataSetChanged();
                                 }
-                                Log.d("???????????/ ", "onPostExecute: "+result.size());
 
                             }
                         });

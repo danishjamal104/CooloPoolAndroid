@@ -40,7 +40,8 @@
             android:id="@+id/search_container"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp">
+            android:layout_marginLeft="8dp"
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="40dp"
