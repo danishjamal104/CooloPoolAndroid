@@ -79,6 +79,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
+        viewHolder.stackView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewHolder.openCurrentPost(mContext, current_post, profileImageUrl);
+            }
+        });
+
         FirebaseStorage storage = FirebaseStorage.getInstance();
         storage.getReference("Users/profileImages/"+current_post.getBlog().getId()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
@@ -198,14 +205,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             manager.setScaleInterval(0.85f);
 
             stackView.setAdapter(post.getAdapter());
-            stackView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openCurrentPost(context, post, imageUrl);
-                }
-            });
-
-
         }
     }
 }

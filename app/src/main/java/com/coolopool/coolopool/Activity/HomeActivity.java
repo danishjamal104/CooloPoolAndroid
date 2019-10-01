@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -64,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         firebaseInit();
 
+        handleIntent(getIntent());
         fab = findViewById(R.id.fab);
 
 
@@ -109,12 +112,12 @@ public class HomeActivity extends AppCompatActivity {
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mSearchBar.getVisibility() == View.INVISIBLE){
+                if (mSearchBar.getVisibility() == View.INVISIBLE) {
                     mSearchBar.setVisibility(View.VISIBLE);
                     mSearchButton.setBackground(getResources().getDrawable(R.drawable.ic_cross));
                     Animation animation = AnimationUtils.loadAnimation(HomeActivity.this, R.anim.search_entry_animation);
                     mSearchBar.startAnimation(animation);
-                }else{
+                } else {
                     mSearchButton.setBackground(getResources().getDrawable(R.drawable.ic_search_white));
                     Animation animation = AnimationUtils.loadAnimation(HomeActivity.this, R.anim.search_exit_animation);
                     mSearchBar.startAnimation(animation);
@@ -126,12 +129,12 @@ public class HomeActivity extends AppCompatActivity {
         mSearchContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mSearchBar.getVisibility() == View.INVISIBLE){
+                if (mSearchBar.getVisibility() == View.INVISIBLE) {
                     mSearchBar.setVisibility(View.VISIBLE);
                     mSearchButton.setBackground(getResources().getDrawable(R.drawable.ic_cross));
                     Animation animation = AnimationUtils.loadAnimation(HomeActivity.this, R.anim.search_entry_animation);
                     mSearchBar.startAnimation(animation);
-                }else{
+                } else {
                     mSearchButton.setBackground(getResources().getDrawable(R.drawable.ic_search_white));
                     Animation animation = AnimationUtils.loadAnimation(HomeActivity.this, R.anim.search_exit_animation);
                     mSearchBar.startAnimation(animation);
@@ -217,6 +220,27 @@ public class HomeActivity extends AppCompatActivity {
                 showDialog();
             }
         });
+
+        // ATTENTION: This was auto-generated to handle app links.
+        Intent appLinkIntent = getIntent();
+        String appLinkAction = appLinkIntent.getAction();
+        Uri appLinkData = appLinkIntent.getData();
+    }
+
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+
+    private void handleIntent(Intent intent) {
+        String appLinkAction = intent.getAction();
+        Uri appLinkData = intent.getData();
+        if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData != null){
+            String recipeId = appLinkData.getLastPathSegment();
+            Uri appData = Uri.parse("content://com.recipe_app/recipe/").buildUpon()
+                    .appendPath(recipeId).build();
+        }
     }
 
     @Override

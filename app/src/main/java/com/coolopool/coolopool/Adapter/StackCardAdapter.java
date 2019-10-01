@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coolopool.coolopool.Activity.PostActivity;
+import com.coolopool.coolopool.Activity.ProfileActivity;
+import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.R;
 import com.squareup.picasso.Picasso;
 
@@ -22,14 +24,20 @@ public class StackCardAdapter extends RecyclerView.Adapter<StackCardAdapter.Stac
 
     ArrayList<String> imageUrl;
     ArrayList<String> description;
+    String profileImageUrl;
+    String postId;
+    Blog blog;
     Context mContext;
 
 
 
-    public StackCardAdapter(ArrayList<String> imageUrl, ArrayList<String> description, Context mContext) {
+    public StackCardAdapter(ArrayList<String> imageUrl, ArrayList<String> description, Context mContext, String postId, Blog blog, String profileImageUrl) {
         this.imageUrl = imageUrl;
         this.description = description;
         this.mContext = mContext;
+        this.postId = postId;
+        this.blog = blog;
+        this.profileImageUrl = profileImageUrl;
     }
 
     @NonNull
@@ -45,13 +53,19 @@ public class StackCardAdapter extends RecyclerView.Adapter<StackCardAdapter.Stac
             Picasso.get().load(imageUrl.get(position)).into(holder.imageView);
         }
         holder.description.setText(description.get(position));
+
         holder.v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent postIntent = new Intent(mContext, PostActivity.class);
+                postIntent.putExtra("BLOG_ID", postId);
+                postIntent.putExtra("USER_ID", blog.getId());
+                postIntent.putExtra("BLOG", blog);
+                postIntent.putExtra("IMAGE", profileImageUrl);
                 mContext.startActivity(postIntent);
             }
         });
+
     }
 
     public String getDes(int position){

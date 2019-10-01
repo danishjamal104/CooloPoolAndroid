@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.appcompat.widget.ShareActionProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,7 +20,9 @@ import com.coolopool.coolopool.Backend.Model.Blog;
 import com.coolopool.coolopool.Backend.Model.Day;
 import com.coolopool.coolopool.Class.NewDay;
 import com.coolopool.coolopool.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -126,7 +131,6 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void displayBlog(){
-        Picasso.get().load(imageUrl).fit().into(profileImage);
         mRef.collection("users").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -207,6 +211,21 @@ public class PostActivity extends AppCompatActivity {
         userId = intent.getStringExtra("USER_ID");
         blog = (Blog) intent.getSerializableExtra("BLOG");
         imageUrl = intent.getStringExtra("IMAGE");
+        if(imageUrl.equals("")){
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            storage.getReference("Users/profileImages/"+userId).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    Uri uri = task.getResult();
+                    imageUrl = uri.toString();
+                    Picasso.get().load(imageUrl).fit().into(profileImage);
+                }
+            });
+        }else{
+            Picasso.get().load(imageUrl).fit().into(profileImage);
+        }
+        Log.d(":::::::::::::::", "getIntentData: "+userId);
     }
 
     private void getBlog(){

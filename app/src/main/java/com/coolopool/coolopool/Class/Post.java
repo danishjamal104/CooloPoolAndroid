@@ -35,7 +35,7 @@ public class Post implements Serializable {
         }
         Log.d(">>>>>>>>>>>>>>>> ", "setUpAdapter: "+imageUrl.size());
         Log.d(">>>>>>>>>>>>>>>> ", "setUpAdapter: "+imageDesc.size());
-        adapter = new StackCardAdapter(imageUrl, imageDesc, context);
+        adapter = new StackCardAdapter(imageUrl, imageDesc, context, this.getId(), blog, "");
     }
 
     public StackCardAdapter getAdapter() {

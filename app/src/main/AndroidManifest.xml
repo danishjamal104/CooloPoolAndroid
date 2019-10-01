@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.coolopool.coolopool">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -70,16 +71,27 @@
             android:theme="@style/Theme.Design.Light.NoActionBar" />
         <activity
             android:name=".Activity.SplashActivity"
-            android:theme="@style/Theme.Design.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.Design.Light.NoActionBar"></activity>
         <activity
             android:name=".Activity.HomeActivity"
             android:theme="@style/Theme.Design.Light.NoActionBar"
             android:windowSoftInputMode="adjustPan">
+            <tools:validation testUrl="https://danishjamal104.github.io" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="danishjamal104.github.io" />
             </intent-filter>
         </activity>
     </application>
