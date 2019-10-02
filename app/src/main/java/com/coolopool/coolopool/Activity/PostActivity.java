@@ -113,11 +113,11 @@ public class PostActivity extends AppCompatActivity {
 
 
     private void init(){
+        shareButton = findViewById(R.id.shareButton);
+        profileImage = findViewById(R.id.post_activity_profileImage);
         getIntentData();
         mAuth = FirebaseAuth.getInstance();
         mRef = FirebaseFirestore.getInstance();
-        shareButton = findViewById(R.id.shareButton);
-        profileImage = findViewById(R.id.post_activity_profileImage);
         description = findViewById(R.id.post_activity_description_textView);
         userName = findViewById(R.id.post_activity_userName_textView);
         views = findViewById(R.id.post_activity_views_count_textView);
@@ -211,7 +211,7 @@ public class PostActivity extends AppCompatActivity {
         userId = intent.getStringExtra("USER_ID");
         blog = (Blog) intent.getSerializableExtra("BLOG");
         imageUrl = intent.getStringExtra("IMAGE");
-        if(imageUrl.equals("")){
+        if(imageUrl.equals("") || imageUrl==null){
             FirebaseStorage storage = FirebaseStorage.getInstance();
 
             storage.getReference("Users/profileImages/"+userId).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {

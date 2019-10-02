@@ -206,7 +206,6 @@ public class HomeFragment extends Fragment {
                                             }
 
                                             currentPost.addAllDays(days);
-                                            currentPost.setUpAdapter();
                                             currentPost.getAdapter().notifyDataSetChanged();
                                         }
                                     });
@@ -216,17 +215,11 @@ public class HomeFragment extends Fragment {
                                     postAdapter.notifyDataSetChanged();
                                 }
                             });
-                            flag++;
 
                         }
                     }
                 }
             });
-
-
-
-
-
             return null;
         }
 
