@@ -18,17 +18,7 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97fc41a5-c346-46ff-8e8d-418e80e28f14" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/circlebackground.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/circlebackground.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_splash.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_splash.xml" afterDir="false" />
-    </list>
+    <list default="true" id="97fc41a5-c346-46ff-8e8d-418e80e28f14" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,34 +95,33 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Activity/SplashActivity.java">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/underline.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="30" column="42" lean-forward="true" selection-start-line="30" selection-start-column="42" selection-end-line="30" selection-end-column="42" />
+            <state relative-caret-position="152">
+              <caret line="8" column="8" lean-forward="true" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="8" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_splash.xml">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/root_layout_post.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="551">
-              <caret line="29" column="41" selection-start-line="29" selection-start-column="41" selection-end-line="29" selection-end-column="41" />
+            <state relative-caret-position="152">
+              <caret line="8" column="40" selection-start-line="8" selection-start-column="40" selection-end-line="8" selection-end-column="40" />
             </state>
           </provider>
           <provider editor-type-id="android-designer2" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/underline.xml">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/circlebackground.xml">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Adapter/PostAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="38">
-              <caret line="2" column="38" selection-start-line="2" selection-start-column="38" selection-end-line="2" selection-end-column="38" />
+            <state relative-caret-position="418">
+              <caret line="61" column="68" lean-forward="true" selection-start-line="61" selection-start-column="68" selection-end-line="61" selection-end-column="68" />
+              <folding>
+                <element signature="method#onCreateViewHolder#0;class#PostAdapter#0" />
+                <element signature="method#addAllPosts#0;class#PostAdapter#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -205,7 +194,6 @@
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Class/Post.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Fragments/HomeFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Adapter/PostAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Activity/PostActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Adapter/StackCardAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Activity/WhtasHotActivity.java" />
@@ -215,12 +203,13 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Views/SplashImageView.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Activity/SplashActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Activity/WhatsHotActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/root_layout_post.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Activity/PostDraftActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Activity/NewPostActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/drawable/circlebackground.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_splash.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/drawable/underline.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/root_layout_post.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Adapter/PostAdapter.java" />
       </list>
     </option>
   </component>
@@ -262,6 +251,13 @@
             <path>
               <item name="CooloPoolAndroid" type="1abcf292:AndroidViewProjectNode" />
               <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="coolopool" type="cbb59c9e:AndroidPsiDirectoryNode" />
+              <item name="Adapter" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="CooloPoolAndroid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
               <item name="res" type="d4f16f75:AndroidResFolderNode" />
             </path>
             <path>
@@ -269,6 +265,12 @@
               <item name="app" type="feadf853:AndroidModuleNode" />
               <item name="res" type="d4f16f75:AndroidResFolderNode" />
               <item name="drawable" type="ddeffd01:AndroidResFolderTypeNode" />
+            </path>
+            <path>
+              <item name="CooloPoolAndroid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="layout" type="ddeffd01:AndroidResFolderTypeNode" />
             </path>
           </expand>
           <select />
@@ -582,7 +584,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" sideWeight="0.48982188" visible="true" weight="0.23175965" />
+      <window_info content_ui="combo" id="Project" order="1" sideWeight="0.48982188" weight="0.23175965" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" sideWeight="0.5101781" side_tool="true" weight="0.23710601" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -609,7 +611,7 @@
       <window_info active="true" anchor="right" id="Assistant" order="5" visible="true" weight="0.29512894" />
       <window_info anchor="right" id="Module Dependencies" order="6" show_stripe_button="false" weight="0.32967836" />
       <window_info anchor="right" id="Flutter Inspector" order="7" />
-      <window_info anchor="right" id="Preview" order="8" visible="true" weight="0.2725322" />
+      <window_info anchor="right" id="Preview" order="8" weight="0.2725322" />
       <window_info anchor="right" id="Flutter Outline" order="9" weight="0.3295129" />
       <window_info anchor="right" id="Android WiFi ADB" order="10" weight="0.3295129" />
     </layout>
@@ -878,17 +880,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Adapter/PostAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="254">
-          <caret line="149" column="12" selection-start-line="149" selection-start-column="12" selection-end-line="149" selection-end-column="12" />
-          <folding>
-            <element signature="method#onCreateViewHolder#0;class#PostAdapter#0" />
-            <element signature="method#addAllPosts#0;class#PostAdapter#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Class/Post.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="245">
@@ -957,14 +948,6 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/small_image_view_list_item.xml">
       <provider editor-type-id="text-editor" />
       <provider selected="true" editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/root_layout_post.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="25" column="47" lean-forward="true" selection-start-line="25" selection-start-column="47" selection-end-line="25" selection-end-column="47" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_post.xml">
       <provider selected="true" editor-type-id="text-editor">
@@ -1054,7 +1037,30 @@
       <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/underline.xml">
-      <provider selected="true" editor-type-id="text-editor" />
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" column="8" lean-forward="true" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/root_layout_post.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" column="40" selection-start-line="8" selection-start-column="40" selection-end-line="8" selection-end-column="40" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/coolopool/coolopool/Adapter/PostAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="61" column="68" lean-forward="true" selection-start-line="61" selection-start-column="68" selection-end-line="61" selection-end-column="68" />
+          <folding>
+            <element signature="method#onCreateViewHolder#0;class#PostAdapter#0" />
+            <element signature="method#addAllPosts#0;class#PostAdapter#0" />
+          </folding>
+        </state>
+      </provider>
     </entry>
   </component>
   <component name="masterDetails">

@@ -41,7 +41,7 @@
         android:drawableStart="@drawable/ic_profile"
         android:drawablePadding="18dp"
         android:hint="@string/UserName"
-        android:fontFamily="@font/glacial_indifference_regular"
+        android:fontFamily="@font/glacial_indifference_bold"
         android:backgroundTint="@color/GrayGoose"
         android:padding="15dp"
         android:layout_marginLeft="40dp"
@@ -49,7 +49,7 @@
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="20sp"
-        />
+        android:textStyle="bold"/>
 
     <EditText
         android:id="@+id/login_pass"
@@ -62,13 +62,14 @@
         android:drawableStart="@drawable/ic_lock"
         android:drawablePadding="18dp"
         android:hint="@string/Password"
-        android:fontFamily="@font/glacial_indifference_regular"
+        android:fontFamily="@font/glacial_indifference_bold"
         android:inputType="textPassword"
         android:padding="15dp"
         android:layout_marginLeft="40dp"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textStyle="bold"/>
 
 
     <androidx.appcompat.widget.AppCompatButton
