@@ -250,6 +250,7 @@ public class PostDraftActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.putInt("noOfBlogs", noOfBlogs+1);
                                 editor.commit();
+                                finish();
                             }
 
                             @Override

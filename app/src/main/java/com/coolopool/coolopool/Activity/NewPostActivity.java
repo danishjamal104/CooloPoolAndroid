@@ -51,6 +51,7 @@ public class NewPostActivity extends AppCompatActivity {
 
 
                 startActivity(draftPostActivity, activityOptions.toBundle());
+                finish();
             }
 
             @Override

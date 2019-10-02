@@ -3,26 +3,15 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Title"
-        android:fontFamily="@font/glacial_indifference_regular"
-        android:textSize="32sp"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="16dp"/>
-
     <LinearLayout
         android:id="@+id/userInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
-        android:background="@drawable/user_info_background">
+        android:background="@color/transparent">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profileImage"
@@ -43,13 +32,25 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:text="Title"
+        android:fontFamily="@font/glacial_indifference_regular"
+        android:textSize="32sp"
+        android:layout_below="@id/userInfo"
+        android:layout_marginLeft="16dp"/>
+
+
     <com.yuyakaido.android.cardstackview.CardStackView
         android:id="@+id/card_stack_view"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:paddingLeft="16dp"
         android:layout_marginTop="8dp"
-        android:layout_below="@id/userInfo">
+        android:layout_below="@id/title">
     </com.yuyakaido.android.cardstackview.CardStackView>
 
 
