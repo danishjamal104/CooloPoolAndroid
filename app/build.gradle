@@ -4,6 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/Users/danishjamal/Documents/CooloPool/App/CooloPoolAndroid/release_key')
+            storePassword 'release'
+            keyAlias = '0'
+            keyPassword 'release'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.coolopool.coolopool"
@@ -19,6 +27,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
 }
 
 dependencies {
