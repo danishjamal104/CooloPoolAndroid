@@ -27,5 +27,5 @@
         android:background="@drawable/circlebackground"
         android:text="What's Hot"
         android:textAllCaps="false"
-        android:textColor="#fff" />
+        android:textColor="@color/top_bar" />
 </LinearLayout>

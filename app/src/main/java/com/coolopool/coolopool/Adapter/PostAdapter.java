@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.Paint;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +56,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull final PostViewHolder viewHolder, int i) {
 
         final Post current_post = posts.get(i);
+
+        viewHolder.userName.setPaintFlags(viewHolder.userName.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         viewHolder.title.setText(current_post.getBlog().getTitle());
         FirebaseFirestore mRef = FirebaseFirestore.getInstance();
