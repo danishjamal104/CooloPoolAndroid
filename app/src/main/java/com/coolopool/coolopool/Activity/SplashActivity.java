@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +22,8 @@ public class SplashActivity extends AppCompatActivity {
 
     private ImageView mLogo;
     private Context context = SplashActivity.this;
+    AppCompatButton startButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         mLogo = findViewById(R.id.Logo);
+        startButton = findViewById(R.id.startBtn);
 
         // for Image in Logo
 
@@ -34,7 +40,17 @@ public class SplashActivity extends AppCompatActivity {
                 .load(R.drawable.logo)
                 .into(mLogo);
 
-        new Timer().schedule(new TimerTask() {
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SplashActivity.this, WhatsHotActivity.class));
+                finish();
+            }
+        });
+
+
+
+        /*new Timer().schedule(new TimerTask() {
             public void run() {
                 Log.d("Log_test", "Login screen open");
                 Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
@@ -42,7 +58,7 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 2000);
+        }, 2000);*/
 
     }
 
