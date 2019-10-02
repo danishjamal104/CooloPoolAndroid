@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Activity.LoginActivity"
-    android:background="@drawable/background">
+    android:background="@color/top_bar">
 
 
     <!-- Uncomment if it required -->
@@ -103,7 +103,7 @@
             android:fontFamily="@font/glacial_indifference_regular"
             android:padding="8dp"
             android:textAllCaps="false"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/SignUp_btn"
@@ -111,10 +111,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="SignUp"
-            android:fontFamily="@font/glacial_indifference_regular"
+            android:fontFamily="@font/glacial_indifference_bold"
             android:padding="8dp"
             android:textAllCaps="false"
-            android:textColor="@android:color/darker_gray" />
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 
